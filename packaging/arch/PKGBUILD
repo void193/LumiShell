@@ -4,7 +4,7 @@
 # Usage: cd packaging/arch && makepkg -si
 
 pkgname=lumi-shell
-pkgver=2.4.0.r634.gaabcd07
+pkgver=2.4.0.r642.g3137c52
 pkgrel=1
 pkgdesc='Lumi: a minimal Quickshell desktop shell for Hyprland, with the lumi CLI'
 arch=('x86_64')
