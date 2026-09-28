@@ -89,5 +89,17 @@ StyledRect {
             }
             font: Tokens.font.body.medium
         }
+
+        IconTextButton {
+            Layout.alignment: Qt.AlignHCenter
+            Layout.topMargin: Tokens.spacing.small
+
+            type: TextButton.Tonal
+            icon: "cleaning_services"
+            text: Cleaner.scanning ? qsTr("Scanning...") : qsTr("Clean")
+            font: Tokens.font.body.small
+            disabled: Cleaner.scanning || Cleaner.cleaning
+            onClicked: Cleaner.scan()
+        }
     }
 }

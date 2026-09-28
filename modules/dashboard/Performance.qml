@@ -129,6 +129,12 @@ Item {
                     sourceComponent: MemoryCard {}
                 }
             }
+
+            // Review list for the memory clean-up, shown after pressing Clean
+            CleanPanel {
+                Layout.fillWidth: true
+                visible: Cleaner.reviewing
+            }
         }
 
         WrappedLoader {
