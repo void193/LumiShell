@@ -325,17 +325,11 @@ Singleton {
     Process {
         id: identityProc
 
-        // Plain control-port protocol; the password never touches argv
-        command: ["python3", "-c", `
-import socket, sys
-key = open(sys.argv[1]).read().strip()
-s = socket.create_connection(("127.0.0.1", 9051), timeout=5)
-s.sendall(f'AUTHENTICATE "{key}"\\r\\nSIGNAL NEWNYM\\r\\nQUIT\\r\\n'.encode())
-print(s.recv(1024).decode().replace("\\r\\n", " ").strip())
-`, root.torKeyPath]
+        // NEWNYM plus closing open circuits, so browsers reconnect with the new exit
+        command: ["python3", Quickshell.shellPath("assets/tor-new-identity.py"), root.torKeyPath]
         stdout: StdioCollector {
             onStreamFinished: {
-                if (text.split("250").length > 2) {
+                if (text.startsWith("ok")) {
                     // Circuits need a moment to rebuild before the new exit shows up
                     root.torExitIp = "";
                     root.torExitCountry = "";
