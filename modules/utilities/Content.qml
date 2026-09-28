@@ -40,22 +40,6 @@ Item {
         }
 
         Loader {
-            id: record
-
-            Layout.fillWidth: true
-            active: Config.utilities.cards.recorder
-            visible: active
-            z: 1
-
-            sourceComponent: Record {
-                objectName: "utilitiesScreenRecorder"
-
-                props: root.props
-                screenState: root.screenState
-            }
-        }
-
-        Loader {
             id: toggles
 
             Layout.fillWidth: true
@@ -69,10 +53,5 @@ Item {
                 popouts: root.popouts
             }
         }
-    }
-
-    RecordingDeleteModal {
-        props: root.props
-        deformMatrix: root.deformMatrix
     }
 }

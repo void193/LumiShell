@@ -65,13 +65,6 @@ PageBase {
         }
 
         ToggleRow {
-            text: qsTr("Screen recorder")
-            subtext: qsTr("Show the screen recorder card")
-            checked: Config.utilities.cards.recorder
-            onToggled: GlobalConfig.utilities.cards.recorder = checked
-        }
-
-        ToggleRow {
             last: true
             text: qsTr("Quick toggles")
             subtext: qsTr("Show the quick toggles card")

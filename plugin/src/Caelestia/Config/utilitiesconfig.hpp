@@ -42,7 +42,6 @@ class UtilitiesCards : public settings::ObjectNode {
     CONFIG_NODE(UtilitiesCards, settings::ObjectNode)
 
     CONFIG_PROPERTY(bool, keepAwake, true)
-    CONFIG_PROPERTY(bool, recorder, true)
     CONFIG_PROPERTY(bool, quickToggles, true)
 };
 
