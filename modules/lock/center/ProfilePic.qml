@@ -2,7 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import M3Shapes
-import LumiShell.Config
+import Lumi.Config
 import qs.components
 import qs.components.effects
 import qs.components.images

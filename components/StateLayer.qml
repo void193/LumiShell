@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Shapes
-import LumiShell
-import LumiShell.Config
+import Lumi
+import Lumi.Config
 import qs.services
 
 MouseArea {

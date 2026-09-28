@@ -1674,7 +1674,7 @@ Singleton {
     LoggingCategory {
         id: lc
 
-        name: "lumishell.qml.services.nmcli"
+        name: "lumi.qml.services.nmcli"
         defaultLogLevel: LoggingCategory.Info
     }
 

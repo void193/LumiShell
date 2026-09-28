@@ -2,8 +2,8 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
-import LumiShell.Config
-import LumiShell.Models
+import Lumi.Config
+import Lumi.Models
 import qs.services
 import qs.modules.nexus.common
 
@@ -47,7 +47,7 @@ PageBase {
                         let parts = path.split("/");
                         let homeDir = "/" + parts[1] + "/" + parts[2];
                         let fileName = parts[parts.length - 1];
-                        return homeDir + "/.cache/lumishell/live_thumbs/" + fileName + ".jpg";
+                        return homeDir + "/.cache/lumi/live_thumbs/" + fileName + ".jpg";
                     }
                     return path;
                 }

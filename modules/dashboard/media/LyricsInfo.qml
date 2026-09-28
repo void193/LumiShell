@@ -1,9 +1,9 @@
 import QtQuick
 import QtQuick.Layouts
-import LumiShell
-import LumiShell.Blobs
-import LumiShell.Config
-import LumiShell.Services
+import Lumi
+import Lumi.Blobs
+import Lumi.Config
+import Lumi.Services
 import qs.components
 import qs.services
 

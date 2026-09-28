@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Templates
-import LumiShell.Components
-import LumiShell.Config
+import Lumi.Components
+import Lumi.Config
 import qs.components
 import qs.services
 

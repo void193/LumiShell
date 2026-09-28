@@ -1,13 +1,13 @@
 import Quickshell
 import Quickshell.Wayland
-import LumiShell.Config
+import Lumi.Config
 
 // qmllint disable uncreatable-type
 PanelWindow {
     // qmllint enable uncreatable-type
     required property string name
 
-    WlrLayershell.namespace: `lumishell-${name}`
+    WlrLayershell.namespace: `lumi-${name}`
     color: "transparent"
 
     contentItem.Config.screen: screen.name

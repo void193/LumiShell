@@ -1,8 +1,8 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Io
-import LumiShell
-import LumiShell.Config
+import Lumi
+import Lumi.Config
 import qs.components
 import qs.services
 import qs.utils
@@ -34,14 +34,14 @@ PageBase {
             }
         }
 
-        // Parsed from the lumishell CLI's package listing; the sh wrapper avoids a
+        // Parsed from the lumi CLI's package listing; the sh wrapper avoids a
         // warning when the (optional) CLI isn't installed
         Process {
             running: true
-            command: ["sh", "-c", "lumishell --version 2>/dev/null"]
+            command: ["sh", "-c", "lumi --version 2>/dev/null"]
             stdout: StdioCollector {
                 onStreamFinished: {
-                    const m = text.match(/lumishell\S*\s+(\d+(?:\.\d+)*)/);
+                    const m = text.match(/lumi\S*\s+(\d+(?:\.\d+)*)/);
                     root.cliVersion = m ? m[1] : "";
                 }
             }
@@ -70,7 +70,7 @@ PageBase {
                 StyledText {
                     Layout.alignment: Qt.AlignHCenter
                     Layout.topMargin: Tokens.spacing.small
-                    text: "LumiShell"
+                    text: "Lumi"
                     font: Tokens.font.headline.builders.large.width(110).build()
                 }
 

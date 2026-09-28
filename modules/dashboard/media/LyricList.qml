@@ -3,8 +3,8 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Effects
 import QtQuick.Layouts
-import LumiShell.Config
-import LumiShell.Services
+import Lumi.Config
+import Lumi.Services
 import qs.components
 import qs.components.containers
 import qs.components.controls

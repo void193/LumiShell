@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+# Utility script for running lumi
+
+cd "$(dirname $0)/../src" || exit
+
+python -m lumi "$@"

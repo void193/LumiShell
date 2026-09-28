@@ -1,7 +1,7 @@
 import QtQuick
 import Quickshell
-import LumiShell
-import LumiShell.Config
+import Lumi
+import Lumi.Config
 
 Scope {
     Connections {

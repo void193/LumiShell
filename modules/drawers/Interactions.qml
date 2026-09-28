@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import Quickshell
-import LumiShell.Config
+import Lumi.Config
 import qs.components
 import qs.components.controls
 import qs.modules.bar as Bar

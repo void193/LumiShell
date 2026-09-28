@@ -2,7 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
-import LumiShell.Config
+import Lumi.Config
 import qs.components
 import qs.components.filedialog
 import qs.services

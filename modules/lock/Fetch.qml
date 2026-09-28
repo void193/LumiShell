@@ -3,8 +3,8 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Services.UPower
-import LumiShell
-import LumiShell.Config
+import Lumi
+import Lumi.Config
 import qs.components
 import qs.components.effects
 import qs.services
@@ -63,7 +63,7 @@ StyledRect {
                 Layout.preferredHeight: 0
                 active: !iconLoader.active
 
-                sourceComponent: SysInfo.isDefaultLogo ? lumishellLogo : distroIcon
+                sourceComponent: SysInfo.isDefaultLogo ? lumiLogo : distroIcon
             }
         }
 
@@ -78,7 +78,7 @@ StyledRect {
                 Layout.fillHeight: true
                 active: root.width > Tokens.sizes.lock.largeLogoWidth
 
-                sourceComponent: SysInfo.isDefaultLogo ? lumishellLogo : distroIcon
+                sourceComponent: SysInfo.isDefaultLogo ? lumiLogo : distroIcon
             }
 
             ColumnLayout {
@@ -150,7 +150,7 @@ StyledRect {
     }
 
     Component {
-        id: lumishellLogo
+        id: lumiLogo
 
         Logo {
             width: height

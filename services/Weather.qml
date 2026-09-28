@@ -3,8 +3,8 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import LumiShell
-import LumiShell.Config
+import Lumi
+import Lumi.Config
 import qs.utils
 
 Singleton {
@@ -177,7 +177,7 @@ Singleton {
 
         const nominatimUrl = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=geocodejson&accept-language=${lang}`;
         const nominatimHeaders = {
-            "User-Agent": `lumishell/${CUtils.version} (+https://github.com/void193/LumiShell)`
+            "User-Agent": `lumi/${CUtils.version} (+https://github.com/void193/LumiShell)`
         };
 
         Requests.get(nominatimUrl, text => {
@@ -416,7 +416,7 @@ Singleton {
     LoggingCategory {
         id: lc
 
-        name: "lumishell.qml.services.weather"
+        name: "lumi.qml.services.weather"
         defaultLogLevel: LoggingCategory.Info
     }
 }

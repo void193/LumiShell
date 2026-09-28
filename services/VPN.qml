@@ -3,8 +3,8 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import LumiShell
-import LumiShell.Config
+import Lumi
+import Lumi.Config
 
 Singleton {
     id: root
@@ -921,7 +921,7 @@ Singleton {
     LoggingCategory {
         id: lc
 
-        name: "lumishell.qml.services.vpn"
+        name: "lumi.qml.services.vpn"
         defaultLogLevel: LoggingCategory.Info
     }
 

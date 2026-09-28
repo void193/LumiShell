@@ -5,8 +5,8 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Services.Pam
-import LumiShell.Config
-import LumiShell.Services
+import Lumi.Config
+import Lumi.Services
 
 Scope {
     id: root

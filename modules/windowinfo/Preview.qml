@@ -5,7 +5,7 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Wayland
-import LumiShell.Config
+import Lumi.Config
 import qs.components
 import qs.services
 

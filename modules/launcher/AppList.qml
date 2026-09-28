@@ -2,7 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import Quickshell
-import LumiShell.Config
+import Lumi.Config
 import qs.components
 import qs.components.containers
 import qs.components.controls

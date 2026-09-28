@@ -2,7 +2,7 @@ pragma Singleton
 
 import QtQuick
 import Quickshell
-import LumiShell.Config
+import Lumi.Config
 
 Singleton {
     property alias enabled: clock.enabled

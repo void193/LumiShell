@@ -5,7 +5,7 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Services.Notifications
-import LumiShell.Config
+import Lumi.Config
 import qs.components
 import qs.components.effects
 import qs.services

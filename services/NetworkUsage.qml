@@ -3,8 +3,8 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import LumiShell.Config
-import LumiShell
+import Lumi.Config
+import Lumi
 
 Singleton {
     id: root

@@ -1,8 +1,8 @@
 pragma Singleton
 
 import Quickshell
-import LumiShell.Config
-import LumiShell.Models
+import Lumi.Config
+import Lumi.Models
 import qs.utils
 
 Searcher {

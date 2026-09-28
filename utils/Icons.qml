@@ -3,7 +3,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Services.Notifications
-import LumiShell.Config
+import Lumi.Config
 
 Singleton {
     id: root

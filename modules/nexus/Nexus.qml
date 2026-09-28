@@ -1,8 +1,8 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import LumiShell.Blobs
-import LumiShell.Config
+import Lumi.Blobs
+import Lumi.Config
 import qs.components
 import qs.components.controls
 import qs.services

@@ -1,5 +1,5 @@
-add_library(lumishell-pch INTERFACE)
-target_precompile_headers(lumishell-pch INTERFACE
+add_library(lumi-pch INTERFACE)
+target_precompile_headers(lumi-pch INTERFACE
     <qobject.h>
     <qqmlintegration.h>
     <qstring.h>

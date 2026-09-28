@@ -1,7 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Widgets
-import LumiShell.Config
+import Lumi.Config
 import qs.components
 import qs.services
 import qs.utils

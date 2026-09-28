@@ -1,12 +1,12 @@
 # Maintainer: Rubin Bastakoti
 #
-# Builds LumiShell (shell, plugin and CLI) straight from this repository.
+# Builds Lumi (shell, plugin and CLI) straight from this repository.
 # Usage: cd packaging/arch && makepkg -si
 
-pkgname=lumishell
-pkgver=2.4.0.r632.gd18ebf1
+pkgname=lumi-shell
+pkgver=2.4.0.r633.gb1bf3be
 pkgrel=1
-pkgdesc='LumiShell: a minimal Quickshell desktop shell for Hyprland, with its CLI'
+pkgdesc='Lumi: a minimal Quickshell desktop shell for Hyprland, with the lumi CLI'
 arch=('x86_64')
 url='https://github.com/void193/LumiShell'
 license=('GPL-3.0-only')
@@ -65,7 +65,7 @@ optdepends=(
 )
 makedepends=('cmake' 'ninja' 'qt6-shadertools' 'git'
              'python-build' 'python-installer' 'python-hatch' 'python-hatch-vcs')
-provides=('lumishell')
+provides=('lumi-shell')
 
 _repo="$(realpath "$startdir/../..")"
 
@@ -77,12 +77,12 @@ build() {
     cmake -S "$_repo" -B "$_repo/build" -G Ninja \
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \
         -DCMAKE_INSTALL_PREFIX=/usr \
-        -DINSTALL_LIBDIR=lib/lumishell \
+        -DINSTALL_LIBDIR=lib/lumi \
         -DINSTALL_QMLDIR=lib/qt6/qml \
-        -DINSTALL_QSCONFDIR=/etc/xdg/quickshell/lumishell \
+        -DINSTALL_QSCONFDIR=/etc/xdg/quickshell/lumi \
         -DVERSION="${pkgver%%.r*}" \
         -DGIT_REVISION="$(git -C "$_repo" rev-parse HEAD)" \
-        -DDISTRIBUTOR="LumiShell PKGBUILD"
+        -DDISTRIBUTOR="Lumi PKGBUILD"
     cmake --build "$_repo/build"
 
     rm -rf "$srcdir/cli"
@@ -96,8 +96,8 @@ package() {
 
     cd "$srcdir/cli"
     python -m installer --destdir="$pkgdir" dist/*.whl
-    install -Dm644 completions/lumishell.fish "$pkgdir"/usr/share/fish/vendor_completions.d/lumishell.fish
+    install -Dm644 completions/lumi.fish "$pkgdir"/usr/share/fish/vendor_completions.d/lumi.fish
 
-    install -Dm755 "$_repo/scripts/lumishell-live-thumbs" "$pkgdir"/usr/bin/lumishell-live-thumbs
+    install -Dm755 "$_repo/scripts/lumi-live-thumbs" "$pkgdir"/usr/bin/lumi-live-thumbs
     install -Dm644 "$_repo/LICENSE" "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
 }

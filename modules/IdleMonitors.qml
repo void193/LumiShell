@@ -5,8 +5,8 @@ import QtQuick
 import Quickshell
 import Quickshell.Wayland
 import Quickshell.Services.UPower
-import LumiShell.Config
-import LumiShell.Services
+import Lumi.Config
+import Lumi.Services
 import qs.services
 
 Scope {

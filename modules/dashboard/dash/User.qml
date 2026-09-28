@@ -2,7 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import M3Shapes
-import LumiShell.Config
+import Lumi.Config
 import qs.components
 import qs.components.effects
 import qs.components.filedialog
@@ -145,7 +145,7 @@ Item {
 
         Loader {
             anchors.centerIn: parent
-            sourceComponent: SysInfo.isDefaultLogo ? lumishellLogo : osLogo
+            sourceComponent: SysInfo.isDefaultLogo ? lumiLogo : osLogo
         }
     }
 
@@ -162,7 +162,7 @@ Item {
     }
 
     Component {
-        id: lumishellLogo
+        id: lumiLogo
 
         Logo {
             implicitWidth: Tokens.sizes.dashboard.logoSize

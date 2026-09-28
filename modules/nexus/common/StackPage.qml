@@ -1,6 +1,6 @@
 import QtQuick
 import QtQuick.Controls
-import LumiShell.Config
+import Lumi.Config
 import qs.components
 import qs.modules.nexus
 
@@ -100,7 +100,7 @@ StackView {
     LoggingCategory {
         id: logCat
 
-        name: "lumishell.nexus"
+        name: "lumi.nexus"
         defaultLogLevel: LoggingCategory.Info
     }
 

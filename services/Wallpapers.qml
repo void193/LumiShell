@@ -3,8 +3,8 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import LumiShell.Config
-import LumiShell.Models
+import Lumi.Config
+import Lumi.Models
 import qs.services
 import qs.utils
 import M3Shapes
@@ -89,7 +89,7 @@ Searcher {
 
     FileView {
         id: propsFileView
-        path: `${Paths.home}/.cache/lumishell/wallpaper_properties.json`
+        path: `${Paths.home}/.cache/lumi/wallpaper_properties.json`
         watchChanges: true
         printErrors: false
         onLoaded: {
@@ -132,7 +132,7 @@ Searcher {
 
     function setWallpaper(path: string): void {
         actualCurrent = path;
-        Quickshell.execDetached(["lumishell", "wallpaper", "-f", path, ...smartArg]);
+        Quickshell.execDetached(["lumi", "wallpaper", "-f", path, ...smartArg]);
     }
 
     function preview(path: string): void {
@@ -177,7 +177,7 @@ Searcher {
 
     Process {
         id: refreshProc
-        command: ["bash", "-c", `lumishell-live-thumbs "${Paths.wallsdir}" "${liveWallpapers.path}"`]
+        command: ["bash", "-c", `lumi-live-thumbs "${Paths.wallsdir}" "${liveWallpapers.path}"`]
         onRunningChanged: {
             if (!running) {
                 let oldPath = liveWallpapers.path;
@@ -298,7 +298,7 @@ Searcher {
             let wall = text().trim();
             if (!wall) {
                 wall = root.fallback;
-                Quickshell.execDetached(["lumishell", "wallpaper", "-f", root.fallback, ...root.smartArg]);
+                Quickshell.execDetached(["lumi", "wallpaper", "-f", root.fallback, ...root.smartArg]);
             }
             root.actualCurrent = wall;
             root.previewColourLock = false;
@@ -306,7 +306,7 @@ Searcher {
         onLoadFailed: {
             root.actualCurrent = root.fallback;
             root.previewColourLock = false;
-            Quickshell.execDetached(["lumishell", "wallpaper", "-f", root.fallback, ...root.smartArg]);
+            Quickshell.execDetached(["lumi", "wallpaper", "-f", root.fallback, ...root.smartArg]);
         }
     }
 
@@ -322,14 +322,14 @@ Searcher {
         id: liveWallpapers
 
         recursive: true
-        path: Quickshell.env("LUMISHELL_LIVE_WALLPAPERS_DIR") || (Paths.wallsdir.substring(0, Paths.wallsdir.lastIndexOf('/')) + "/Live-Wallpapers")
+        path: Quickshell.env("LUMI_LIVE_WALLPAPERS_DIR") || (Paths.wallsdir.substring(0, Paths.wallsdir.lastIndexOf('/')) + "/Live-Wallpapers")
         filter: FileSystemModel.Files
     }
 
     Process {
         id: getPreviewColoursProc
 
-        command: ["lumishell", "wallpaper", "-p", root.previewPath, ...root.smartArg]
+        command: ["lumi", "wallpaper", "-p", root.previewPath, ...root.smartArg]
         stdout: StdioCollector {
             onStreamFinished: {
                 Colours.load(text, true);

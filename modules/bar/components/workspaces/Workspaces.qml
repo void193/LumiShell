@@ -4,7 +4,7 @@ import QtQuick
 import QtQuick.Effects
 import QtQuick.Layouts
 import Quickshell
-import LumiShell.Config
+import Lumi.Config
 import qs.components
 import qs.services
 

@@ -3,8 +3,8 @@ pragma Singleton
 import ".."
 import QtQuick
 import Quickshell
-import LumiShell.Config
-import LumiShell.Services
+import Lumi.Config
+import Lumi.Services
 import qs.services
 import qs.utils
 

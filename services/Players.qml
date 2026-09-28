@@ -4,8 +4,8 @@ import QtQml
 import Quickshell
 import Quickshell.Io
 import Quickshell.Services.Mpris
-import LumiShell
-import LumiShell.Config
+import Lumi
+import Lumi.Config
 import qs.components.misc
 
 Singleton {

@@ -1,5 +1,5 @@
 import QtQuick
-import LumiShell.Config
+import Lumi.Config
 import qs.components
 import qs.components.effects
 import qs.services
@@ -23,11 +23,11 @@ Item {
     Loader {
         asynchronous: true
         anchors.centerIn: parent
-        sourceComponent: SysInfo.isDefaultLogo ? lumishellLogo : distroIcon
+        sourceComponent: SysInfo.isDefaultLogo ? lumiLogo : distroIcon
     }
 
     Component {
-        id: lumishellLogo
+        id: lumiLogo
 
         Logo {
             implicitWidth: Math.round(Tokens.font.body.large.pointSize * 1.6)

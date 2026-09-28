@@ -16,7 +16,7 @@ include(cmake/pch.cmake)
 include(cmake/qml-module.cmake)
 
 # Header only helpers
-add_library(lumishell-util INTERFACE)
-target_include_directories(lumishell-util INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/include")
+add_library(lumi-util INTERFACE)
+target_include_directories(lumi-util INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
-add_subdirectory(src/LumiShell)
+add_subdirectory(src/Lumi)

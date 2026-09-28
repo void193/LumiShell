@@ -74,7 +74,7 @@ def import_group(module: str) -> tuple[int, int] | None:
         return (3, depth)
     if module == "M3Shapes":
         return (4, depth)
-    if module == "LumiShell" or module.startswith("LumiShell."):
+    if module == "Lumi" or module.startswith("Lumi."):
         return (5, depth)
     if module == "qs.components" or module.startswith("qs.components."):
         return (6, depth)

@@ -1,6 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
-import LumiShell.Config
+import Lumi.Config
 import qs.components.controls
 import qs.modules.nexus.common
 

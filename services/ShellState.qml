@@ -2,7 +2,7 @@ pragma Singleton
 
 import QtQuick
 import Quickshell
-import LumiShell
+import Lumi
 import qs.components
 import qs.services
 

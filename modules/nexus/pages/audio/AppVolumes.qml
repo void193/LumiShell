@@ -4,7 +4,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Services.Pipewire
-import LumiShell.Config
+import Lumi.Config
 import qs.components
 import qs.services
 import qs.utils

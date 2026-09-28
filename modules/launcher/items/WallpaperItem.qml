@@ -1,7 +1,7 @@
 import QtQuick
 import Quickshell
-import LumiShell.Config
-import LumiShell.Models
+import Lumi.Config
+import Lumi.Models
 import qs.components
 import qs.components.effects
 import qs.components.images
@@ -109,7 +109,7 @@ Item {
                     let parts = pathStr.split("/");
                     let homeDir = "/" + parts[1] + "/" + parts[2];
                     let fileName = parts[parts.length - 1];
-                    return homeDir + "/.cache/lumishell/live_thumbs/" + fileName + ".jpg";
+                    return homeDir + "/.cache/lumi/live_thumbs/" + fileName + ".jpg";
                 }
                 return pathStr || "";
             }

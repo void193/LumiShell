@@ -3,9 +3,9 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import LumiShell.Components
-import LumiShell.Config
-import LumiShell.Models
+import Lumi.Components
+import Lumi.Config
+import Lumi.Models
 import qs.components
 import qs.components.controls
 import qs.components.filedialog
@@ -165,7 +165,7 @@ PageBase {
                 model: {
                     const walls = Wallpapers.list;
                     const baseDir = Paths.wallsdir;
-                    const liveDir = Quickshell.env("LUMISHELL_LIVE_WALLPAPERS_DIR") || (Paths.wallsdir.substring(0, Paths.wallsdir.lastIndexOf('/')) + "/Live-Wallpapers");
+                    const liveDir = Quickshell.env("LUMI_LIVE_WALLPAPERS_DIR") || (Paths.wallsdir.substring(0, Paths.wallsdir.lastIndexOf('/')) + "/Live-Wallpapers");
                     const categories = {};
                     const list = [];
                     for (const w of walls) {
@@ -198,13 +198,13 @@ PageBase {
                             let parts = path.split("/");
                             let homeDir = "/" + parts[1] + "/" + parts[2];
                             let fileName = parts[parts.length - 1];
-                            return homeDir + "/.cache/lumishell/live_thumbs/" + fileName + ".jpg";
+                            return homeDir + "/.cache/lumi/live_thumbs/" + fileName + ".jpg";
                         }
                         return path;
                     }
                     formatIcon: {
                         if (!modelData) return "";
-                        const liveDir = Quickshell.env("LUMISHELL_LIVE_WALLPAPERS_DIR") || (Paths.wallsdir.substring(0, Paths.wallsdir.lastIndexOf('/')) + "/Live-Wallpapers");
+                        const liveDir = Quickshell.env("LUMI_LIVE_WALLPAPERS_DIR") || (Paths.wallsdir.substring(0, Paths.wallsdir.lastIndexOf('/')) + "/Live-Wallpapers");
                         if (modelData.parentDir !== Paths.wallsdir && modelData.parentDir !== liveDir) {
                             return "folder";
                         }
@@ -212,7 +212,7 @@ PageBase {
                     }
                     formatText: {
                         if (!modelData) return "";
-                        const liveDir = Quickshell.env("LUMISHELL_LIVE_WALLPAPERS_DIR") || (Paths.wallsdir.substring(0, Paths.wallsdir.lastIndexOf('/')) + "/Live-Wallpapers");
+                        const liveDir = Quickshell.env("LUMI_LIVE_WALLPAPERS_DIR") || (Paths.wallsdir.substring(0, Paths.wallsdir.lastIndexOf('/')) + "/Live-Wallpapers");
                         if (modelData.parentDir !== Paths.wallsdir && modelData.parentDir !== liveDir) return "";
                         let path = String(modelData.path);
                         let props = Wallpapers.propertiesCache[path];
@@ -225,7 +225,7 @@ PageBase {
                     }
                     fpsText: {
                         if (!modelData) return "";
-                        const liveDir = Quickshell.env("LUMISHELL_LIVE_WALLPAPERS_DIR") || (Paths.wallsdir.substring(0, Paths.wallsdir.lastIndexOf('/')) + "/Live-Wallpapers");
+                        const liveDir = Quickshell.env("LUMI_LIVE_WALLPAPERS_DIR") || (Paths.wallsdir.substring(0, Paths.wallsdir.lastIndexOf('/')) + "/Live-Wallpapers");
                         if (modelData.parentDir !== Paths.wallsdir && modelData.parentDir !== liveDir) return "";
                         let path = String(modelData.path);
                         let props = Wallpapers.propertiesCache[path];
@@ -238,7 +238,7 @@ PageBase {
                     }
                     resText: {
                         if (!modelData) return "";
-                        const liveDir = Quickshell.env("LUMISHELL_LIVE_WALLPAPERS_DIR") || (Paths.wallsdir.substring(0, Paths.wallsdir.lastIndexOf('/')) + "/Live-Wallpapers");
+                        const liveDir = Quickshell.env("LUMI_LIVE_WALLPAPERS_DIR") || (Paths.wallsdir.substring(0, Paths.wallsdir.lastIndexOf('/')) + "/Live-Wallpapers");
                         if (modelData.parentDir !== Paths.wallsdir && modelData.parentDir !== liveDir) return "";
                         let path = String(modelData.path);
                         let props = Wallpapers.propertiesCache[path];
@@ -253,7 +253,7 @@ PageBase {
                         if (!modelData)
                             return "";
 
-                        const liveDir = Quickshell.env("LUMISHELL_LIVE_WALLPAPERS_DIR") || (Paths.wallsdir.substring(0, Paths.wallsdir.lastIndexOf('/')) + "/Live-Wallpapers");
+                        const liveDir = Quickshell.env("LUMI_LIVE_WALLPAPERS_DIR") || (Paths.wallsdir.substring(0, Paths.wallsdir.lastIndexOf('/')) + "/Live-Wallpapers");
                         if (modelData.parentDir !== Paths.wallsdir && modelData.parentDir !== liveDir) {
                             const category = Wallpapers.getCategoryFor(modelData);
                             return category.slice(0, 1).toUpperCase() + category.slice(1);
@@ -261,7 +261,7 @@ PageBase {
                         return modelData.name;
                     }
                     onClicked: {
-                        const liveDir = Quickshell.env("LUMISHELL_LIVE_WALLPAPERS_DIR") || (Paths.wallsdir.substring(0, Paths.wallsdir.lastIndexOf('/')) + "/Live-Wallpapers");
+                        const liveDir = Quickshell.env("LUMI_LIVE_WALLPAPERS_DIR") || (Paths.wallsdir.substring(0, Paths.wallsdir.lastIndexOf('/')) + "/Live-Wallpapers");
                         if (modelData.parentDir !== Paths.wallsdir && modelData.parentDir !== liveDir) {
                             root.nState.selectedWallpaperCategory = Wallpapers.getCategoryFor(modelData);
                             root.nState.openSubPage(2); // Category page

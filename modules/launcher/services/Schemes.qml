@@ -4,7 +4,7 @@ import ".."
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import LumiShell.Config
+import Lumi.Config
 import qs.utils
 
 Searcher {
@@ -40,7 +40,7 @@ Searcher {
         id: getSchemes
 
         running: true
-        command: ["lumishell", "scheme", "list"]
+        command: ["lumi", "scheme", "list"]
         stdout: StdioCollector {
             onStreamFinished: {
                 const schemeData = JSON.parse(text);
@@ -64,7 +64,7 @@ Searcher {
         id: getCurrent
 
         running: true
-        command: ["lumishell", "scheme", "get", "-nfv"]
+        command: ["lumi", "scheme", "get", "-nfv"]
         stdout: StdioCollector {
             onStreamFinished: {
                 const [name, flavour, variant] = text.trim().split("\n");
@@ -82,7 +82,7 @@ Searcher {
 
         function onClicked(list: AppList): void {
             list.screenState.launcher = false;
-            Quickshell.execDetached(["lumishell", "scheme", "set", "-n", name, "-f", flavour]);
+            Quickshell.execDetached(["lumi", "scheme", "set", "-n", name, "-f", flavour]);
         }
     }
 }

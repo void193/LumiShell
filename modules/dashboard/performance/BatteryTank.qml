@@ -1,8 +1,8 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Services.UPower
-import LumiShell.Config
-import LumiShell.Services
+import Lumi.Config
+import Lumi.Services
 import qs.components
 import qs.services
 

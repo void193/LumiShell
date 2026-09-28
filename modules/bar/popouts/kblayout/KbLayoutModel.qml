@@ -2,8 +2,8 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import Quickshell.Io
-import LumiShell
-import LumiShell.Config
+import Lumi
+import Lumi.Config
 
 // TODO: handle this better later
 

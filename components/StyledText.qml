@@ -1,7 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import LumiShell.Config
+import Lumi.Config
 import qs.services
 
 Text {

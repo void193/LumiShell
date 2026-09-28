@@ -1,7 +1,7 @@
 pragma Singleton
 
 import Quickshell
-import LumiShell.Config
+import Lumi.Config
 
 Singleton {
     id: root

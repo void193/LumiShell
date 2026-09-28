@@ -4,8 +4,8 @@ import QtQuick
 import QtQuick.Shapes
 import Quickshell
 import Quickshell.Services.Notifications
-import LumiShell.Components
-import LumiShell.Config
+import Lumi.Components
+import Lumi.Config
 import qs.components
 import qs.components.controls
 import qs.components.effects

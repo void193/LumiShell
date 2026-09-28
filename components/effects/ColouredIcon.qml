@@ -2,7 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import Quickshell.Widgets
-import LumiShell.Images
+import Lumi.Images
 
 IconImage {
     id: root

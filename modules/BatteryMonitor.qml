@@ -1,9 +1,9 @@
 import QtQuick
 import Quickshell
 import Quickshell.Services.UPower
-import LumiShell
-import LumiShell.Config
-import LumiShell.Services
+import Lumi
+import Lumi.Config
+import Lumi.Services
 
 Scope {
     id: root

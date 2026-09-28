@@ -4,9 +4,9 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import Quickshell.Services.Pipewire
-import LumiShell
-import LumiShell.Config
-import LumiShell.Services
+import Lumi
+import Lumi.Config
+import Lumi.Services
 
 Singleton {
     id: root

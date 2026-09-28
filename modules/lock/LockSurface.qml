@@ -3,7 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Effects
 import Quickshell.Wayland
-import LumiShell.Config
+import Lumi.Config
 import qs.components
 import qs.components.images
 import qs.services

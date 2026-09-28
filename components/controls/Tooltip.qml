@@ -1,6 +1,6 @@
 import QtQuick
 import QtQuick.Controls
-import LumiShell.Config
+import Lumi.Config
 import qs.components
 import qs.components.effects
 import qs.services

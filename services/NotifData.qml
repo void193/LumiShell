@@ -3,8 +3,8 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell
 import Quickshell.Services.Notifications
-import LumiShell
-import LumiShell.Config
+import Lumi
+import Lumi.Config
 import qs.services
 import qs.utils
 

@@ -1,6 +1,6 @@
 import QtQuick
 import Quickshell
-import LumiShell.Images
+import Lumi.Images
 
 Image {
     id: root

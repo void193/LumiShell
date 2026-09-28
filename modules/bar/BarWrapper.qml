@@ -2,7 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import Quickshell
-import LumiShell.Config
+import Lumi.Config
 import qs.components
 import qs.utils
 import qs.modules.bar.popouts as BarPopouts

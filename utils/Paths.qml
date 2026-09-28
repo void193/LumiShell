@@ -2,8 +2,8 @@ pragma Singleton
 
 import QtQuick
 import Quickshell
-import LumiShell
-import LumiShell.Config
+import Lumi
+import Lumi.Config
 
 Singleton {
     id: root
@@ -12,15 +12,15 @@ Singleton {
     readonly property string pictures: Quickshell.env("XDG_PICTURES_DIR") || `${home}/Pictures`
     readonly property string videos: Quickshell.env("XDG_VIDEOS_DIR") || `${home}/Videos`
 
-    readonly property string data: `${Quickshell.env("XDG_DATA_HOME") || `${home}/.local/share`}/lumishell`
-    readonly property string state: `${Quickshell.env("XDG_STATE_HOME") || `${home}/.local/state`}/lumishell`
-    readonly property string cache: `${Quickshell.env("XDG_CACHE_HOME") || `${home}/.cache`}/lumishell`
-    readonly property string config: `${Quickshell.env("XDG_CONFIG_HOME") || `${home}/.config`}/lumishell`
+    readonly property string data: `${Quickshell.env("XDG_DATA_HOME") || `${home}/.local/share`}/lumi`
+    readonly property string state: `${Quickshell.env("XDG_STATE_HOME") || `${home}/.local/state`}/lumi`
+    readonly property string cache: `${Quickshell.env("XDG_CACHE_HOME") || `${home}/.cache`}/lumi`
+    readonly property string config: `${Quickshell.env("XDG_CONFIG_HOME") || `${home}/.config`}/lumi`
 
     readonly property string imagecache: `${cache}/imagecache`
     readonly property string notifimagecache: `${imagecache}/notifs`
-    readonly property string wallsdir: Quickshell.env("LUMISHELL_WALLPAPERS_DIR") || absolutePath(GlobalConfig.paths.wallpaperDir)
-    readonly property string libdir: Quickshell.env("LUMISHELL_LIB_DIR") || "/usr/lib/lumishell"
+    readonly property string wallsdir: Quickshell.env("LUMI_WALLPAPERS_DIR") || absolutePath(GlobalConfig.paths.wallpaperDir)
+    readonly property string libdir: Quickshell.env("LUMI_LIB_DIR") || "/usr/lib/lumi"
 
     function toLocalFile(path: url): string {
         path = Qt.resolvedUrl(path);

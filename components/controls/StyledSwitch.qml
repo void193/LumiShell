@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Shapes
 import QtQuick.Templates
-import LumiShell.Config
+import Lumi.Config
 import qs.components
 import qs.services
 

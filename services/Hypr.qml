@@ -4,8 +4,8 @@ import QtQuick
 import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Io
-import LumiShell.Config
-import LumiShell.Services
+import Lumi.Config
+import Lumi.Services
 import qs.components.misc
 
 Singleton {
@@ -100,9 +100,9 @@ Singleton {
 
     function reloadDynamicConfs(): void {
         if (usingLua) {
-            extras.batchMessage(['eval hl.bind("Caps_Lock", hl.dsp.global("lumishell:refreshDevices"), { locked = true, non_consuming = true, ignore_mods = true, release = true })', 'eval hl.bind("Num_Lock", hl.dsp.global("lumishell:refreshDevices"), { locked = true, non_consuming = true, ignore_mods = true, release = true })']);
+            extras.batchMessage(['eval hl.bind("Caps_Lock", hl.dsp.global("lumi:refreshDevices"), { locked = true, non_consuming = true, ignore_mods = true, release = true })', 'eval hl.bind("Num_Lock", hl.dsp.global("lumi:refreshDevices"), { locked = true, non_consuming = true, ignore_mods = true, release = true })']);
         } else {
-            extras.batchMessage(["keyword bindlni ,Caps_Lock,global,lumishell:refreshDevices", "keyword bindlni ,Num_Lock,global,lumishell:refreshDevices"]);
+            extras.batchMessage(["keyword bindlni ,Caps_Lock,global,lumi:refreshDevices", "keyword bindlni ,Num_Lock,global,lumi:refreshDevices"]);
         }
     }
 
@@ -151,7 +151,7 @@ Singleton {
     FileView {
         id: kbLayoutFile
 
-        path: Quickshell.env("LUMISHELL_XKB_RULES_PATH") || "/usr/share/X11/xkb/rules/base.lst"
+        path: Quickshell.env("LUMI_XKB_RULES_PATH") || "/usr/share/X11/xkb/rules/base.lst"
         onLoaded: {
             const layoutMatch = text().match(/! layout\n([\s\S]*?)\n\n/);
             if (layoutMatch) {

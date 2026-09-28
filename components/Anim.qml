@@ -1,5 +1,5 @@
 import QtQuick
-import LumiShell.Config
+import Lumi.Config
 
 NumberAnimation {
     enum Type {

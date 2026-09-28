@@ -1,8 +1,8 @@
 import QtQuick
 import Quickshell
-import LumiShell.Config
-import LumiShell.Images
-import LumiShell.Models
+import Lumi.Config
+import Lumi.Images
+import Lumi.Models
 import qs.components
 import qs.components.effects
 import qs.components.images

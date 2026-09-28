@@ -5,8 +5,8 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import Quickshell.Services.Notifications
-import LumiShell
-import LumiShell.Config
+import Lumi
+import Lumi.Config
 import qs.components.misc
 import qs.services
 import qs.utils

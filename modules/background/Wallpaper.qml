@@ -3,7 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Effects
 import M3Shapes
-import LumiShell.Config
+import Lumi.Config
 import qs.components
 import qs.components.filedialog
 import qs.components.images
@@ -36,7 +36,7 @@ Item {
 
         const homeDir = "/" + parts[1] + "/" + parts[2];
         const fileName = parts[parts.length - 1];
-        return `${homeDir}/.cache/lumishell/live_thumbs/${fileName}.jpg`;
+        return `${homeDir}/.cache/lumi/live_thumbs/${fileName}.jpg`;
     }
 
     function createMediaForSource(path, placeholderThumb = "") {

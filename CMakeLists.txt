@@ -26,7 +26,7 @@ endif()
 
 string(REGEX REPLACE "^v" "" VERSION "${VERSION}")
 
-project(lumishell VERSION ${VERSION} LANGUAGES CXX)
+project(lumi VERSION ${VERSION} LANGUAGES CXX)
 
 include(GNUInstallDirs)
 
@@ -37,9 +37,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
 
 set(DISTRIBUTOR "Unset" CACHE STRING "Distributor")
 set(ENABLE_MODULES "extras;plugin;shell" CACHE STRING "Modules to build/install")
-set(INSTALL_LIBDIR "${CMAKE_INSTALL_LIBDIR}/lumishell" CACHE STRING "Library install dir")
+set(INSTALL_LIBDIR "${CMAKE_INSTALL_LIBDIR}/lumi" CACHE STRING "Library install dir")
 set(INSTALL_QMLDIR "${CMAKE_INSTALL_LIBDIR}/qt6/qml" CACHE STRING "QML install dir")
-set(INSTALL_QSCONFDIR "${CMAKE_INSTALL_SYSCONFDIR}/xdg/quickshell/lumishell" CACHE STRING "Quickshell config install dir")
+set(INSTALL_QSCONFDIR "${CMAKE_INSTALL_SYSCONFDIR}/xdg/quickshell/lumi" CACHE STRING "Quickshell config install dir")
 
 add_compile_options(
     -Wall -Wextra -Wpedantic -Wshadow -Wconversion

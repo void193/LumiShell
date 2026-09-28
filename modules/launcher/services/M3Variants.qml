@@ -3,7 +3,7 @@ pragma Singleton
 import ".."
 import QtQuick
 import Quickshell
-import LumiShell.Config
+import Lumi.Config
 import qs.utils
 
 Searcher {
@@ -79,7 +79,7 @@ Searcher {
 
         function onClicked(list: AppList): void {
             list.screenState.launcher = false;
-            Quickshell.execDetached(["lumishell", "scheme", "set", "-v", variant]);
+            Quickshell.execDetached(["lumi", "scheme", "set", "-v", variant]);
         }
     }
 }

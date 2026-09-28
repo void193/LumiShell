@@ -6,8 +6,8 @@ import QtQuick.Effects
 import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Wayland
-import LumiShell.Blobs
-import LumiShell.Config
+import Lumi.Blobs
+import Lumi.Config
 import qs.components
 import qs.components.containers
 import qs.services

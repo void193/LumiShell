@@ -4,7 +4,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import M3Shapes
-import LumiShell.Config
+import Lumi.Config
 import qs.components
 import qs.components.controls
 import qs.components.effects
