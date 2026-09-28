@@ -1,6 +1,8 @@
 pragma ComponentBehavior: Bound
 
+import QtQuick
 import QtQuick.Layouts
+import Quickshell
 import Lumi.Config
 import qs.modules.nexus.common
 
@@ -18,13 +20,24 @@ PageBase {
 
         StepperRow {
             first: true
-            label: qsTr("Shown")
-            subtext: qsTr("Number of workspaces displayed")
+            label: qsTr("Workspaces")
+            subtext: qsTr("How many workspaces exist (mod + 1 to %1)").arg(Config.bar.workspaces.shown)
             value: Config.bar.workspaces.shown
             from: 1
-            to: 20
+            to: 9
             stepSize: 1
-            onMoved: v => GlobalConfig.bar.workspaces.shown = v
+            onMoved: v => {
+                GlobalConfig.bar.workspaces.shown = v;
+                hyprReload.restart();
+            }
+        }
+
+        // Hyprland reads the count at config load, so reload it once the value settles
+        Timer {
+            id: hyprReload
+
+            interval: 800
+            onTriggered: Quickshell.execDetached(["hyprctl", "reload"])
         }
 
         ToggleRow {
