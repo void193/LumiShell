@@ -7,6 +7,17 @@ Ships with the `lumi` CLI for colour schemes, wallpapers, screenshots and more.
 
 ## Install (Arch Linux)
 
+**The easy way:** [void193/Lumi](https://github.com/void193/Lumi) installs the whole desktop (this
+shell, Hyprland, terminal, prompt, fonts, everything) from a fresh Arch install, with a step-by-step
+guide starting from the Arch ISO:
+
+```sh
+git clone https://github.com/void193/Lumi.git && cd Lumi && ./install.sh
+```
+
+**Just the shell:** build and install the package from this repo (its AUR dependencies, e.g.
+`quickshell-git` and `qt6-m3shapes-git`, need to be installed first):
+
 ```sh
 git clone https://github.com/void193/LumiShell.git
 cd LumiShell/packaging/arch
