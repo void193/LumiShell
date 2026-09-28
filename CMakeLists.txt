@@ -8,7 +8,8 @@ if(NOT DEFINED VERSION)
     )
 
     if("${VERSION}" STREQUAL "")
-        message(FATAL_ERROR "VERSION is not set and failed to get from git")
+        set(VERSION "0.0.0")
+        message(WARNING "No git tag found, using version ${VERSION}")
     endif()
 endif()
 

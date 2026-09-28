@@ -74,7 +74,13 @@ provides=('lumi-shell')
 _repo="$(realpath "$startdir/../..")"
 
 pkgver() {
-    git -C "$_repo" describe --tags --long --abbrev=7 | sed 's/^v//;s/-/.r/;s/-/./'
+    # Without tags (e.g. a shallow clone) fall back to the commit count
+    local desc
+    if desc=$(git -C "$_repo" describe --tags --long --abbrev=7 2>/dev/null); then
+        sed 's/^v//;s/-/.r/;s/-/./' <<<"$desc"
+    else
+        printf '0.r%s.g%s\n' "$(git -C "$_repo" rev-list --count HEAD)" "$(git -C "$_repo" rev-parse --short=7 HEAD)"
+    fi
 }
 
 build() {
