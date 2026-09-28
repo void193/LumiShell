@@ -153,7 +153,9 @@ StyledRect {
         id: lumiLogo
 
         Logo {
-            width: height
+            // Keep the mark's proportions, and leave the info lines most of the card
+            implicitHeight: Math.min(root.width * 0.3 * designHeight / designWidth, 170)
+            width: Math.min(height * designWidth / designHeight, root.width * 0.3)
         }
     }
 
