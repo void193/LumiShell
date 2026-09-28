@@ -56,7 +56,7 @@ ColumnLayout {
             if (!Privacy.torInstalled)
                 return qsTr("run: sudo lumi-tor-setup");
             if (Privacy.torRouting)
-                return Privacy.torExitIp ? `exit ${Privacy.torExitIp}${Privacy.torExitCountry ? ` · ${Privacy.torExitCountry}` : ""}` : qsTr("building circuit...");
+                return Privacy.torExitIp ? `exit ${Privacy.torExitIp}` : qsTr("building circuit...");
             return qsTr("routes firefox & proxy-aware apps");
         }
         isOn: Privacy.torRouting
@@ -220,7 +220,7 @@ ColumnLayout {
         spacing: Tokens.spacing.medium
 
         StyledText {
-            text: "ip"
+            text: Privacy.torRouting ? "real ip" : "ip"
             color: Colours.palette.m3onSurfaceVariant
             font: Tokens.font.mono.small
         }
@@ -266,7 +266,7 @@ ColumnLayout {
         visible: Privacy.networkingEnabled
         horizontalAlignment: Text.AlignHCenter
         wrapMode: Text.WordWrap
-        text: "offline · clipboard wiped · locked"
+        text: "offline · wiped · locked"
         color: Colours.palette.m3outline
         font: Tokens.font.mono.small
     }

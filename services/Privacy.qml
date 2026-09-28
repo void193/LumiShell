@@ -108,6 +108,14 @@ Singleton {
         }
     }
 
+    // Also covers shell restarts while Tor mode is already on
+    onTorRoutingChanged: {
+        if (torRouting && !torExitIp) {
+            exitRetry.attempts = 0;
+            exitRetry.restart();
+        }
+    }
+
     function setRotateMinutes(minutes: int): void {
         store.rotateMinutes = minutes;
         nextRotateAt = minutes > 0 ? Date.now() + minutes * 60000 : 0;
