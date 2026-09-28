@@ -1,3 +1,5 @@
+<p align=center><img src="assets/lumi.png" width="220" alt="Lumi logo"></p>
+
 <h1 align=center>Lumi</h1>
 
 A minimal, clean desktop shell for [Hyprland](https://hypr.land), built on [Quickshell](https://quickshell.outfoxxed.me).

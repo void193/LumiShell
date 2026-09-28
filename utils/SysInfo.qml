@@ -57,16 +57,18 @@ Singleton {
             root.osId = fd("ID");
             root.osIdLike = fd("ID_LIKE").split(" ");
 
+            // Lumi's own mark is the default; "distro" uses the os-release logo, anything else is an icon name or path
             const logo = Quickshell.iconPath(fd("LOGO"), true);
-            if (GlobalConfig.general.logo === "lumi") {
-                root.osLogo = Qt.resolvedUrl(`${Quickshell.shellDir}/assets/logo.svg`);
-                root.isDefaultLogo = true;
-            } else if (GlobalConfig.general.logo) {
-                root.osLogo = Quickshell.iconPath(GlobalConfig.general.logo, true) || "file://" + Paths.absolutePath(GlobalConfig.general.logo);
-                root.isDefaultLogo = false;
-            } else if (logo) {
+            const setting = GlobalConfig.general.logo;
+            if (setting === "distro" && logo) {
                 root.osLogo = logo;
                 root.isDefaultLogo = false;
+            } else if (setting && setting !== "lumi" && setting !== "distro") {
+                root.osLogo = Quickshell.iconPath(setting, true) || "file://" + Paths.absolutePath(setting);
+                root.isDefaultLogo = false;
+            } else {
+                root.osLogo = Qt.resolvedUrl(`${Quickshell.shellDir}/assets/logo.svg`);
+                root.isDefaultLogo = true;
             }
         }
     }
