@@ -220,6 +220,9 @@ Singleton {
                     const port = addr.slice(cut + 1);
                     if (host.startsWith("127.") || host === "::1" || host === "localhost")
                         local++;
+                    // UDP sockets in the ephemeral range are clients (browsers, calls), not services
+                    else if (proto === "udp" && parseInt(port) >= 32768)
+                        continue;
                     else if (!exposed.some(e => e.proto === proto && e.port === port))
                         exposed.push({ proto: proto, port: port, proc: proc || "?" });
                 }
