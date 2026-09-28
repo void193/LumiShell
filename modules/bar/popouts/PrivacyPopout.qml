@@ -2,127 +2,301 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+import M3Shapes
 import Lumi.Config
 import qs.components
 import qs.components.controls
 import qs.services
 
+// Privacy panel: status header, anonymity, local protections, live activity, kill switch
 ColumnLayout {
     id: root
 
-    spacing: Tokens.spacing.small
-    width: 300
+    readonly property string status: !Privacy.networkingEnabled ? "offline" : Privacy.tunneled ? "protected" : "exposed"
+    readonly property color cardColour: Colours.tPalette.m3surfaceContainerHigh
+
+    spacing: Tokens.spacing.medium
+    width: 340
 
     Component.onCompleted: Privacy.refresh()
 
-    // Header: one plain line saying how exposed we are
+    // Status header
     RowLayout {
         Layout.fillWidth: true
         Layout.topMargin: Tokens.padding.medium
-        Layout.rightMargin: Tokens.padding.extraSmall
-        spacing: Tokens.spacing.small
+        spacing: Tokens.spacing.large
 
-        MaterialIcon {
-            text: Privacy.tunneled ? "shield_lock" : "shield"
-            fill: Privacy.tunneled ? 1 : 0
-            color: Privacy.tunneled ? Colours.palette.m3primary : Colours.palette.m3onSurfaceVariant
-        }
+        MaterialShape {
+            implicitSize: 52
+            shape: MaterialShape.Cookie9Sided
+            color: root.status === "protected" ? Colours.palette.m3primary : root.status === "offline" ? Colours.palette.m3errorContainer : Colours.tPalette.m3surfaceContainerHighest
 
-        StyledText {
-            Layout.fillWidth: true
-            text: qsTr("Privacy")
-            font: Tokens.font.body.builders.medium.weight(Font.Medium).build()
-        }
-
-        StyledText {
-            text: {
-                if (!Privacy.networkingEnabled)
-                    return "offline";
-                if (Privacy.vpnActive)
-                    return `via ${Privacy.vpnName}`;
-                if (Privacy.torRouting)
-                    return `via tor${Privacy.torExitCountry ? ` · ${Privacy.torExitCountry}` : ""}`;
-                return "exposed";
+            Behavior on color {
+                CAnim {}
             }
-            color: Privacy.tunneled ? Colours.palette.m3primary : Colours.palette.m3onSurfaceVariant
-            font: Tokens.font.mono.small
+
+            MaterialIcon {
+                anchors.centerIn: parent
+                animate: true
+                text: root.status === "protected" ? "shield_lock" : root.status === "offline" ? "wifi_off" : "shield"
+                fill: root.status === "exposed" ? 0 : 1
+                color: root.status === "protected" ? Colours.palette.m3onPrimary : root.status === "offline" ? Colours.palette.m3onErrorContainer : Colours.palette.m3onSurfaceVariant
+                fontStyle: Tokens.font.icon.large
+            }
         }
-    }
 
-    // Tunnels and defences
-    Toggle {
-        label: qsTr("Tor mode")
-        detail: {
-            if (!Privacy.torInstalled)
-                return qsTr("run: sudo lumi-tor-setup");
-            if (Privacy.torRouting)
-                return Privacy.torExitIp ? `exit ${Privacy.torExitIp}` : qsTr("building circuit...");
-            return qsTr("routes firefox & proxy-aware apps");
-        }
-        isOn: Privacy.torRouting
-        toggle.disabled: !Privacy.torInstalled || Privacy.busy
-        toggle.onToggled: Privacy.toggleTor()
-    }
-
-    // Identity rotation, only while routing through Tor
-    ColumnLayout {
-        Layout.fillWidth: true
-        Layout.rightMargin: Tokens.padding.extraSmall
-        Layout.preferredHeight: Privacy.torRouting ? implicitHeight : 0
-        visible: Privacy.torRouting
-        spacing: Tokens.spacing.small
-
-        RowLayout {
+        ColumnLayout {
             Layout.fillWidth: true
-            spacing: Tokens.spacing.small
+            spacing: 0
+
+            StyledText {
+                animate: true
+                text: root.status === "protected" ? qsTr("Protected") : root.status === "offline" ? qsTr("Offline") : qsTr("Exposed")
+                font: Tokens.font.title.builders.medium.weight(Font.Medium).build()
+            }
 
             StyledText {
                 Layout.fillWidth: true
+                animate: true
                 text: {
-                    if (Privacy.rotateMinutes <= 0 || Privacy.nextRotateAt <= 0)
-                        return "rotate  off";
-                    const left = Math.max(0, Math.round((Privacy.nextRotateAt - countdown.now) / 1000));
-                    return `rotate  ${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}`;
+                    if (root.status === "offline")
+                        return "network killed";
+                    if (Privacy.vpnActive)
+                        return `vpn · ${Privacy.vpnName}`;
+                    if (Privacy.torRouting) {
+                        if (!Privacy.torExitIp)
+                            return "tor · building circuit";
+                        return `tor · ${Privacy.torExitCountry || Privacy.torExitIp}`;
+                    }
+                    return "direct connection";
                 }
-                color: Colours.palette.m3onSurfaceVariant
+                color: root.status === "protected" ? Colours.palette.m3primary : Colours.palette.m3onSurfaceVariant
+                elide: Text.ElideRight
                 font: Tokens.font.mono.small
-            }
-
-            Repeater {
-                model: [0, 5, 15, 30]
-
-                TextButton {
-                    required property int modelData
-
-                    type: TextButton.Tonal
-                    isToggle: true
-                    checked: Privacy.rotateMinutes === modelData
-                    text: modelData === 0 ? qsTr("off") : `${modelData}m`
-                    font: Tokens.font.mono.small
-                    horizontalPadding: Tokens.padding.small
-                    disabled: !Privacy.torControl && modelData > 0
-                    onClicked: Privacy.setRotateMinutes(modelData)
-                }
             }
         }
 
-        TextButton {
-            Layout.fillWidth: true
+        IconButton {
+            id: identityBtn
 
-            type: TextButton.Tonal
-            text: Privacy.rotating || Privacy.checkingExit ? qsTr("Rotating...") : qsTr("New identity")
-            disabled: !Privacy.torControl || Privacy.rotating
+            readonly property bool working: Privacy.rotating || (Privacy.checkingExit && !Privacy.torExitIp)
+
+            visible: Privacy.torRouting
+            type: IconButton.Tonal
+            isRound: true
+            icon: "autorenew"
+            disabled: !Privacy.torControl || working
             onClicked: Privacy.newIdentity()
+            onWorkingChanged: {
+                if (!working)
+                    identityBtn.label.rotation = 0;
+            }
+
+            // Spin while a new identity is being set up
+            RotationAnimator {
+                target: identityBtn.label
+                running: identityBtn.working
+                loops: Animation.Infinite
+                from: 0
+                to: 360
+                duration: 900
+            }
+        }
+    }
+
+    // Anonymity
+    GroupLabel {
+        text: qsTr("Anonymity")
+    }
+
+    Card {
+        SettingRow {
+            icon: "public"
+            title: qsTr("Tor mode")
+            detail: {
+                if (!Privacy.torInstalled)
+                    return "sudo lumi-tor-setup";
+                if (Privacy.torRouting)
+                    return Privacy.torExitIp ? `exit ${Privacy.torExitIp}` : "connecting...";
+                return "route firefox through tor";
+            }
+            isOn: Privacy.torRouting
+            enabled: Privacy.torInstalled && !Privacy.busy
+            onToggled: Privacy.toggleTor()
+        }
+
+        // Rotation, only while routing through Tor
+        ColumnLayout {
+            Layout.fillWidth: true
+            Layout.preferredHeight: Privacy.torRouting ? implicitHeight : 0
+            Layout.topMargin: Privacy.torRouting ? Tokens.spacing.small : 0
+            visible: Privacy.torRouting
+            spacing: Tokens.spacing.small
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Tokens.spacing.small
+
+                StyledText {
+                    Layout.fillWidth: true
+                    text: qsTr("Rotate identity")
+                    color: Colours.palette.m3onSurfaceVariant
+                    font: Tokens.font.body.small
+                }
+
+                StyledText {
+                    visible: Privacy.rotateMinutes > 0 && Privacy.nextRotateAt > 0
+                    text: {
+                        const left = Math.max(0, Math.round((Privacy.nextRotateAt - countdown.now) / 1000));
+                        return `next ${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}`;
+                    }
+                    color: Colours.palette.m3primary
+                    font: Tokens.font.mono.small
+                }
+            }
+
+            // Segmented interval picker
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Tokens.spacing.extraSmall
+
+                Repeater {
+                    model: [0, 5, 15, 30]
+
+                    TextButton {
+                        required property int modelData
+
+                        Layout.fillWidth: true
+                        type: TextButton.Tonal
+                        isToggle: true
+                        checked: Privacy.rotateMinutes === modelData
+                        text: modelData === 0 ? qsTr("Off") : `${modelData} min`
+                        font: Tokens.font.body.small
+                        disabled: !Privacy.torControl && modelData > 0
+                        onClicked: Privacy.setRotateMinutes(modelData)
+                    }
+                }
+            }
+        }
+    }
+
+    // Local protections
+    GroupLabel {
+        text: qsTr("Protection")
+    }
+
+    Card {
+        SettingRow {
+            icon: "local_fire_department"
+            title: qsTr("Firewall")
+            detail: Privacy.firewallActive ? "blocking inbound" : "off"
+            isOn: Privacy.firewallActive
+            enabled: !Privacy.busy
+            onToggled: Privacy.toggleFirewall()
+        }
+
+        SettingRow {
+            icon: "fingerprint"
+            title: qsTr("Random MAC")
+            detail: Privacy.wifiConnection ? (Privacy.macRandom ? "randomised" : "hardware address") : "no wi-fi"
+            isOn: Privacy.macRandom
+            enabled: Privacy.wifiConnection.length > 0 && !Privacy.busy
+            onToggled: Privacy.toggleMacRandom()
+        }
+
+        SettingRow {
+            icon: "content_paste_off"
+            title: qsTr("Clipboard wipe")
+            detail: Privacy.clipboardAutoClear ? `cleared ${Privacy.clipboardClearDelay}s after copy` : "off"
+            isOn: Privacy.clipboardAutoClear
+            onToggled: Privacy.setClipboardAutoClear(!Privacy.clipboardAutoClear)
+        }
+    }
+
+    // Live activity
+    GroupLabel {
+        text: qsTr("Activity")
+    }
+
+    GridLayout {
+        Layout.fillWidth: true
+        columns: 2
+        rowSpacing: Tokens.spacing.small
+        columnSpacing: Tokens.spacing.small
+
+        Tile {
+            icon: "mic"
+            label: qsTr("Microphone")
+            value: Privacy.micInUse ? Privacy.micApps.join(", ") : "idle"
+            alert: Privacy.micInUse
+        }
+
+        Tile {
+            icon: "videocam"
+            label: qsTr("Camera")
+            value: Privacy.camInUse ? "in use" : "idle"
+            alert: Privacy.camInUse
+        }
+
+        Tile {
+            icon: "lan"
+            label: qsTr("Open ports")
+            value: Privacy.exposedPorts.length > 0 ? Privacy.exposedPorts.map(p => `${p.port}`).join(" ") : "none"
+            alert: Privacy.exposedPorts.length > 0
+        }
+
+        Tile {
+            icon: "swap_horiz"
+            label: qsTr("Connections")
+            value: `${Privacy.connections}`
+        }
+    }
+
+    // Real address and kill switch
+    RowLayout {
+        Layout.fillWidth: true
+        Layout.topMargin: Tokens.spacing.small
+        spacing: Tokens.spacing.small
+
+        StyledText {
+            text: qsTr("Real IP")
+            color: Colours.palette.m3onSurfaceVariant
+            font: Tokens.font.body.small
         }
 
         StyledText {
             Layout.fillWidth: true
-            visible: !Privacy.torControl
-            wrapMode: Text.WordWrap
-            text: qsTr("Rotation needs the control port: sudo lumi-tor-setup")
-            color: Colours.palette.m3outline
+            text: {
+                if (Privacy.checkingIp)
+                    return "checking...";
+                if (!Privacy.publicIp)
+                    return "hidden";
+                return Privacy.ipCountry ? `${Privacy.publicIp} · ${Privacy.ipCountry}` : Privacy.publicIp;
+            }
+            horizontalAlignment: Text.AlignRight
+            elide: Text.ElideLeft
             font: Tokens.font.mono.small
         }
+
+        TextButton {
+            type: TextButton.Text
+            text: Privacy.publicIp ? qsTr("Hide") : qsTr("Reveal")
+            font: Tokens.font.body.small
+            disabled: Privacy.checkingIp || !Privacy.networkingEnabled
+            onClicked: Privacy.publicIp ? Privacy.clearIp() : Privacy.checkIp()
+        }
+    }
+
+    IconTextButton {
+        Layout.fillWidth: true
+        Layout.bottomMargin: Tokens.padding.medium
+
+        type: TextButton.Tonal
+        icon: Privacy.networkingEnabled ? "emergency_home" : "wifi"
+        text: Privacy.networkingEnabled ? qsTr("Kill switch") : qsTr("Restore network")
+        inactiveColour: Privacy.networkingEnabled ? Colours.palette.m3errorContainer : Colours.palette.m3primaryContainer
+        inactiveOnColour: Privacy.networkingEnabled ? Colours.palette.m3onErrorContainer : Colours.palette.m3onPrimaryContainer
+        onClicked: Privacy.networkingEnabled ? Privacy.panic() : Privacy.restoreNetwork()
     }
 
     // Drives the rotation countdown while the popout is open
@@ -138,163 +312,78 @@ ColumnLayout {
         onTriggered: now = Date.now()
     }
 
-    Toggle {
-        label: qsTr("Firewall")
-        detail: Privacy.firewallName || "nftables.service"
-        isOn: Privacy.firewallActive
-        toggle.disabled: Privacy.busy
-        toggle.onToggled: Privacy.toggleFirewall()
-    }
-
-    Toggle {
-        label: qsTr("Random MAC")
-        detail: Privacy.wifiConnection ? qsTr("%1, reconnects").arg(Privacy.wifiConnection) : qsTr("no wi-fi")
-        isOn: Privacy.macRandom
-        toggle.disabled: !Privacy.wifiConnection || Privacy.busy
-        toggle.onToggled: Privacy.toggleMacRandom()
-    }
-
-    Toggle {
-        label: qsTr("Clipboard auto-clear")
-        detail: Privacy.clipboardAutoClear ? qsTr("wiped %1s after copying").arg(Privacy.clipboardClearDelay) : qsTr("off")
-        isOn: Privacy.clipboardAutoClear
-        toggle.onToggled: Privacy.setClipboardAutoClear(toggle.checked)
-    }
-
-    // Sensors
-    StyledText {
+    component GroupLabel: StyledText {
         Layout.topMargin: Tokens.spacing.small
-        text: qsTr("Sensors")
-        color: Colours.palette.m3onSurfaceVariant
-        font: Tokens.font.body.small
+        Layout.leftMargin: Tokens.padding.small
+        color: Colours.palette.m3primary
+        font: Tokens.font.label.builders.medium.weight(Font.Medium).build()
     }
 
-    Readout {
-        label: "mic"
-        value: Privacy.micInUse ? Privacy.micApps.join(", ") : "idle"
-        alert: Privacy.micInUse
-    }
+    component Card: StyledRect {
+        default property alias content: cardLayout.data
 
-    Readout {
-        label: "cam"
-        value: Privacy.camInUse ? "in use" : "idle"
-        alert: Privacy.camInUse
-    }
-
-    // Sockets
-    StyledText {
-        Layout.topMargin: Tokens.spacing.small
-        text: qsTr("Network")
-        color: Colours.palette.m3onSurfaceVariant
-        font: Tokens.font.body.small
-    }
-
-    Readout {
-        label: "port"
-        value: Privacy.exposedPorts.length > 0 ? `${Privacy.exposedPorts.length} open to network` : `none exposed${Privacy.localPorts > 0 ? ` · ${Privacy.localPorts} local` : ""}`
-        alert: Privacy.exposedPorts.length > 0
-    }
-
-    Repeater {
-        model: Privacy.exposedPorts.slice(0, 4)
-
-        Readout {
-            required property var modelData
-
-            label: ""
-            value: `  ${modelData.proto} :${modelData.port}  ${modelData.proc}`
-            alert: true
-        }
-    }
-
-    Readout {
-        label: "conn"
-        value: `${Privacy.connections} established`
-    }
-
-    // Public address, only fetched when asked
-    RowLayout {
         Layout.fillWidth: true
-        Layout.topMargin: Tokens.spacing.small
-        Layout.rightMargin: Tokens.padding.extraSmall
-        spacing: Tokens.spacing.medium
+        implicitHeight: cardLayout.implicitHeight + Tokens.padding.medium * 2
+        radius: Tokens.rounding.large
+        color: root.cardColour
 
-        StyledText {
-            text: Privacy.torRouting ? "real ip" : "ip"
-            color: Colours.palette.m3onSurfaceVariant
-            font: Tokens.font.mono.small
-        }
+        ColumnLayout {
+            id: cardLayout
 
-        StyledText {
-            Layout.fillWidth: true
-            text: {
-                if (Privacy.checkingIp)
-                    return "checking...";
-                if (!Privacy.publicIp)
-                    return "hidden";
-                return Privacy.ipCountry ? `${Privacy.publicIp} · ${Privacy.ipCountry}` : Privacy.publicIp;
-            }
-            elide: Text.ElideRight
-            font: Tokens.font.mono.small
-        }
-
-        TextButton {
-            type: TextButton.Text
-            text: Privacy.publicIp ? qsTr("Hide") : qsTr("Check")
-            disabled: Privacy.checkingIp || !Privacy.networkingEnabled
-            onClicked: Privacy.publicIp ? Privacy.clearIp() : Privacy.checkIp()
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.margins: Tokens.padding.medium
+            spacing: Tokens.spacing.medium
         }
     }
 
-    // Kill switch
-    TextButton {
-        Layout.fillWidth: true
-        Layout.topMargin: Tokens.spacing.small
-        Layout.bottomMargin: Tokens.padding.small
-        Layout.rightMargin: Tokens.padding.extraSmall
+    component SettingRow: RowLayout {
+        id: row
 
-        type: TextButton.Tonal
-        text: Privacy.networkingEnabled ? qsTr("Kill switch") : qsTr("Restore network")
-        inactiveColour: Privacy.networkingEnabled ? Colours.palette.m3errorContainer : Colours.palette.m3secondaryContainer
-        inactiveOnColour: Privacy.networkingEnabled ? Colours.palette.m3onErrorContainer : Colours.palette.m3onSecondaryContainer
-        onClicked: Privacy.networkingEnabled ? Privacy.panic() : Privacy.restoreNetwork()
-    }
-
-    StyledText {
-        Layout.fillWidth: true
-        Layout.bottomMargin: Tokens.padding.small
-        visible: Privacy.networkingEnabled
-        horizontalAlignment: Text.AlignHCenter
-        wrapMode: Text.WordWrap
-        text: "offline · wiped · locked"
-        color: Colours.palette.m3outline
-        font: Tokens.font.mono.small
-    }
-
-    component Toggle: RowLayout {
-        id: toggleRow
-
-        required property string label
+        required property string icon
+        required property string title
+        required property string detail
         required property bool isOn
-        property string detail
-        property alias toggle: toggle
+
+        signal toggled
 
         Layout.fillWidth: true
-        Layout.rightMargin: Tokens.padding.extraSmall
         spacing: Tokens.spacing.medium
+        opacity: enabled ? 1 : 0.6
+
+        StyledRect {
+            implicitWidth: 34
+            implicitHeight: 34
+            radius: Tokens.rounding.full
+            color: row.isOn ? Colours.palette.m3primaryContainer : Colours.tPalette.m3surfaceContainerHighest
+
+            Behavior on color {
+                CAnim {}
+            }
+
+            MaterialIcon {
+                anchors.centerIn: parent
+                animate: true
+                text: row.icon
+                fill: row.isOn ? 1 : 0
+                color: row.isOn ? Colours.palette.m3onPrimaryContainer : Colours.palette.m3onSurfaceVariant
+            }
+        }
 
         ColumnLayout {
             Layout.fillWidth: true
             spacing: 0
 
             StyledText {
-                text: toggleRow.label
+                text: row.title
+                font: Tokens.font.body.medium
             }
 
             StyledText {
                 Layout.fillWidth: true
-                visible: text.length > 0
-                text: toggleRow.detail
+                animate: true
+                text: row.detail
                 color: Colours.palette.m3outline
                 elide: Text.ElideRight
                 font: Tokens.font.mono.small
@@ -304,41 +393,81 @@ ColumnLayout {
         StyledSwitch {
             id: toggle
 
-            checked: toggleRow.isOn
+            checked: row.isOn
+            disabled: !row.enabled
+            onToggled: row.toggled()
         }
 
-        // Flipping the switch breaks its binding; re-sync with the real state once the action settles
+        // Flipping the switch breaks its binding; re-sync with the real state once actions settle
         Connections {
             function onBusyChanged(): void {
                 if (!Privacy.busy)
-                    toggle.checked = Qt.binding(() => toggleRow.isOn);
+                    toggle.checked = Qt.binding(() => row.isOn);
             }
 
             target: Privacy
         }
+
+        Connections {
+            function onIsOnChanged(): void {
+                toggle.checked = Qt.binding(() => row.isOn);
+            }
+
+            target: row
+        }
     }
 
-    component Readout: RowLayout {
+    component Tile: StyledRect {
+        id: tile
+
+        required property string icon
         required property string label
         required property string value
         property bool alert
 
         Layout.fillWidth: true
-        Layout.rightMargin: Tokens.padding.extraSmall
-        spacing: Tokens.spacing.medium
+        implicitHeight: tileLayout.implicitHeight + Tokens.padding.medium * 2
+        radius: Tokens.rounding.medium
+        color: alert ? Colours.palette.m3errorContainer : root.cardColour
 
-        StyledText {
-            text: parent.label
-            color: Colours.palette.m3onSurfaceVariant
-            font: Tokens.font.mono.small
+        Behavior on color {
+            CAnim {}
         }
 
-        StyledText {
-            Layout.fillWidth: true
-            text: parent.value
-            color: parent.alert ? Colours.palette.m3error : Colours.palette.m3onSurface
-            elide: Text.ElideRight
-            font: Tokens.font.mono.small
+        RowLayout {
+            id: tileLayout
+
+            anchors.fill: parent
+            anchors.margins: Tokens.padding.medium
+            spacing: Tokens.spacing.small
+
+            MaterialIcon {
+                text: tile.icon
+                fill: tile.alert ? 1 : 0
+                color: tile.alert ? Colours.palette.m3onErrorContainer : Colours.palette.m3onSurfaceVariant
+            }
+
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: 0
+
+                StyledText {
+                    Layout.fillWidth: true
+                    text: tile.label
+                    color: tile.alert ? Colours.palette.m3onErrorContainer : Colours.palette.m3onSurfaceVariant
+                    elide: Text.ElideRight
+                    font: Tokens.font.label.small
+                }
+
+                StyledText {
+                    Layout.fillWidth: true
+                    animate: true
+                    text: tile.value
+                    color: tile.alert ? Colours.palette.m3onErrorContainer : Colours.palette.m3onSurface
+                    elide: Text.ElideRight
+                    font: Tokens.font.mono.small
+                }
+            }
         }
     }
 }
