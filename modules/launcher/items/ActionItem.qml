@@ -47,6 +47,9 @@ Item {
 
                 text: root.modelData?.name ?? ""
                 font: Tokens.font.body.medium
+
+                elide: Text.ElideRight
+                width: root.width - icon.width - Tokens.rounding.extraLargeIncreased
             }
 
             StyledText {

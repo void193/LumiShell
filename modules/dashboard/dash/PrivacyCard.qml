@@ -22,7 +22,7 @@ Item {
         id: keyMetrics
 
         font: Tokens.font.mono.small
-        text: "mac"
+        text: "port"
     }
 
     ColumnLayout {
@@ -73,6 +73,13 @@ Item {
             key: "mac"
             value: Privacy.macRandom ? "random" : "stock"
             good: Privacy.macRandom
+        }
+
+        Line {
+            key: "port"
+            value: Privacy.exposedPorts.length > 0 ? `${Privacy.exposedPorts.length} open` : "closed"
+            good: Privacy.exposedPorts.length === 0
+            alert: Privacy.exposedPorts.length > 0
         }
 
         Line {

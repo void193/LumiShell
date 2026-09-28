@@ -4,6 +4,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import Quickshell.Services.Pipewire
+import Lumi.Config
 
 // Read-mostly view of how exposed this machine is: tunnels (VPN/Tor), firewall,
 // MAC randomisation, and whether anything is using the mic or camera.
@@ -25,6 +26,11 @@ Singleton {
     property string wifiConnection: ""
     property bool networkingEnabled: true
 
+    // Sockets: listeners reachable from the network, and live connections
+    property var exposedPorts: [] // [{ proto, port, proc }]
+    property int localPorts: 0
+    property int connections: 0
+
     // Sensors
     readonly property var micApps: {
         const apps = [];
@@ -42,6 +48,15 @@ Singleton {
     property string publicIp: ""
     property string ipCountry: ""
     readonly property bool checkingIp: ipProc.running
+
+    // Clipboard auto-clear; the delay lives in config so it survives restarts
+    readonly property int clipboardClearDelay: GlobalConfig.services.clipboardClearDelay ?? 0
+    readonly property bool clipboardAutoClear: clipboardClearDelay > 0
+    property bool ignoreClipboardEvents: false
+
+    function setClipboardAutoClear(enabled: bool): void {
+        GlobalConfig.services.clipboardClearDelay = enabled ? 45 : 0;
+    }
 
     property bool busy: false
     property bool clearBusyOnRefresh: false
@@ -116,15 +131,39 @@ Singleton {
             [ -n "$wifi" ] && echo "mac=$(nmcli -g 802-11-wireless.cloned-mac-address connection show "$wifi" 2>/dev/null)"
             echo "networking=$(nmcli networking 2>/dev/null)"
             fuser -s /dev/video* 2>/dev/null && echo cam=1 || echo cam=0
+            ss -Htulnp 2>/dev/null | awk '{ p=""; if (match($7, /"[^"]+"/)) p=substr($7, RSTART+1, RLENGTH-2); print "sock=" $1 "|" $5 "|" p }'
+            echo "conn=$(ss -Htun state established 2>/dev/null | wc -l)"
         `]
         stdout: StdioCollector {
             onStreamFinished: {
                 const kv = {};
+                const socks = [];
                 for (const line of text.trim().split("\n")) {
                     const i = line.indexOf("=");
-                    if (i > 0)
+                    if (i <= 0)
+                        continue;
+                    if (line.startsWith("sock="))
+                        socks.push(line.slice(5));
+                    else
                         kv[line.slice(0, i)] = line.slice(i + 1);
                 }
+
+                // Loopback listeners can't be reached from outside; everything else can
+                const exposed = [];
+                let local = 0;
+                for (const sock of socks) {
+                    const [proto, addr, proc] = sock.split("|");
+                    const cut = addr.lastIndexOf(":");
+                    const host = addr.slice(0, cut).replace(/^\[|\]$/g, "").replace(/%.*$/, "");
+                    const port = addr.slice(cut + 1);
+                    if (host.startsWith("127.") || host === "::1" || host === "localhost")
+                        local++;
+                    else if (!exposed.some(e => e.proto === proto && e.port === port))
+                        exposed.push({ proto: proto, port: port, proc: proc || "?" });
+                }
+                root.exposedPorts = exposed;
+                root.localPorts = local;
+                root.connections = parseInt(kv.conn) || 0;
                 root.vpnName = kv.vpn ?? "";
                 root.vpnActive = root.vpnName.length > 0;
                 root.torInstalled = kv.tor_installed === "1";
@@ -169,6 +208,37 @@ Singleton {
         }
     }
 
+    // Every clipboard change restarts the countdown
+    Process {
+        running: root.clipboardAutoClear
+        command: ["wl-paste", "--watch", "echo", "changed"]
+        stdout: SplitParser {
+            onRead: {
+                if (!root.ignoreClipboardEvents)
+                    clipboardTimer.restart();
+            }
+        }
+    }
+
+    Timer {
+        id: clipboardTimer
+
+        interval: root.clipboardClearDelay * 1000
+        onTriggered: {
+            // Clearing fires another change event; don't let it restart the countdown
+            root.ignoreClipboardEvents = true;
+            Quickshell.execDetached(["sh", "-c", "wl-copy --clear; wl-copy --primary --clear"]);
+            ignoreTimer.restart();
+        }
+    }
+
+    Timer {
+        id: ignoreTimer
+
+        interval: 1500
+        onTriggered: root.ignoreClipboardEvents = false
+    }
+
     Timer {
         interval: 4000
         running: true
@@ -197,7 +267,10 @@ Singleton {
                 macRandom: root.macRandom,
                 mic: root.micApps,
                 cam: root.camInUse,
-                networking: root.networkingEnabled
+                networking: root.networkingEnabled,
+                exposedPorts: root.exposedPorts,
+                localPorts: root.localPorts,
+                connections: root.connections
             });
         }
     }

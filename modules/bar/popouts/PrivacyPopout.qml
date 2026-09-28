@@ -74,6 +74,13 @@ ColumnLayout {
         toggle.onToggled: Privacy.toggleMacRandom()
     }
 
+    Toggle {
+        label: qsTr("Clipboard auto-clear")
+        detail: Privacy.clipboardAutoClear ? qsTr("wiped %1s after copying").arg(Privacy.clipboardClearDelay) : qsTr("off")
+        isOn: Privacy.clipboardAutoClear
+        toggle.onToggled: Privacy.setClipboardAutoClear(toggle.checked)
+    }
+
     // Sensors
     StyledText {
         Layout.topMargin: Tokens.spacing.small
@@ -92,6 +99,37 @@ ColumnLayout {
         label: "cam"
         value: Privacy.camInUse ? "in use" : "idle"
         alert: Privacy.camInUse
+    }
+
+    // Sockets
+    StyledText {
+        Layout.topMargin: Tokens.spacing.small
+        text: qsTr("Network")
+        color: Colours.palette.m3onSurfaceVariant
+        font: Tokens.font.body.small
+    }
+
+    Readout {
+        label: "port"
+        value: Privacy.exposedPorts.length > 0 ? `${Privacy.exposedPorts.length} open to network` : `none exposed${Privacy.localPorts > 0 ? ` · ${Privacy.localPorts} local` : ""}`
+        alert: Privacy.exposedPorts.length > 0
+    }
+
+    Repeater {
+        model: Privacy.exposedPorts.slice(0, 4)
+
+        Readout {
+            required property var modelData
+
+            label: ""
+            value: `  ${modelData.proto} :${modelData.port}  ${modelData.proc}`
+            alert: true
+        }
+    }
+
+    Readout {
+        label: "conn"
+        value: `${Privacy.connections} established`
     }
 
     // Public address, only fetched when asked
@@ -148,7 +186,7 @@ ColumnLayout {
         visible: Privacy.networkingEnabled
         horizontalAlignment: Text.AlignHCenter
         wrapMode: Text.WordWrap
-        text: "network off · clipboard wiped · locked"
+        text: "offline · clipboard wiped · locked"
         color: Colours.palette.m3outline
         font: Tokens.font.mono.small
     }

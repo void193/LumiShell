@@ -29,7 +29,7 @@ StyledListView {
     function stateForText(text: string): string {
         const prefix = GlobalConfig.launcher.actionPrefix;
         if (text.startsWith(prefix)) {
-            for (const action of ["calc", "scheme", "variant"])
+            for (const action of ["calc", "scheme", "variant", "run", "ssh", "enc"])
                 if (text.startsWith(`${prefix}${action} `))
                     return action;
 
@@ -49,6 +49,12 @@ StyledListView {
             return Schemes.query(text);
         case "variant":
             return M3Variants.query(text);
+        case "run":
+            return Tools.run(text);
+        case "ssh":
+            return Tools.ssh(text);
+        case "enc":
+            return Tools.enc(text);
         default:
             return Apps.search(text);
         }
@@ -101,6 +107,28 @@ StyledListView {
         },
         State {
             name: "actions"
+
+            PropertyChanges {
+                root.delegate: actionItem
+            }
+        },
+        // Launcher tools reuse the action row
+        State {
+            name: "run"
+
+            PropertyChanges {
+                root.delegate: actionItem
+            }
+        },
+        State {
+            name: "ssh"
+
+            PropertyChanges {
+                root.delegate: actionItem
+            }
+        },
+        State {
+            name: "enc"
 
             PropertyChanges {
                 root.delegate: actionItem

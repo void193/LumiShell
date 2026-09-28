@@ -46,6 +46,24 @@ class LauncherConfig : public settings::ObjectNode {
                 { u"command"_s, QStringList{ u"autocomplete"_s, u"calc"_s } },
             }),
             vmap({
+                { u"name"_s, u"Run"_s },
+                { u"icon"_s, u"terminal"_s },
+                { u"description"_s, u"Run a shell command in a terminal or the background"_s },
+                { u"command"_s, QStringList{ u"autocomplete"_s, u"run"_s } },
+            }),
+            vmap({
+                { u"name"_s, u"SSH"_s },
+                { u"icon"_s, u"lan"_s },
+                { u"description"_s, u"Connect to a host from ~/.ssh"_s },
+                { u"command"_s, QStringList{ u"autocomplete"_s, u"ssh"_s } },
+            }),
+            vmap({
+                { u"name"_s, u"Encode"_s },
+                { u"icon"_s, u"key"_s },
+                { u"description"_s, u"base64, hex, url and hashes of some text"_s },
+                { u"command"_s, QStringList{ u"autocomplete"_s, u"enc"_s } },
+            }),
+            vmap({
                 { u"name"_s, u"Scheme"_s },
                 { u"icon"_s, u"palette"_s },
                 { u"description"_s, u"Change the current colour scheme"_s },

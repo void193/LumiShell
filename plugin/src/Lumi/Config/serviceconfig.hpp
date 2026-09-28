@@ -16,11 +16,8 @@ using settings::vmap;
 class ServiceConfig : public settings::ObjectNode {
     CONFIG_NODE(ServiceConfig, settings::ObjectNode)
 
-    CONFIG_GLOBAL_PROPERTY(QString, weatherLocation, QString())
-    // Guess based on locale
-    CONFIG_GLOBAL_PROPERTY(bool, useFahrenheit,
-        QLocale().measurementSystem() == QLocale::ImperialUSSystem ||
-            QLocale().measurementSystem() == QLocale::ImperialUKSystem)
+    // Seconds before a copied value is wiped from the clipboard; 0 disables
+    CONFIG_GLOBAL_PROPERTY(int, clipboardClearDelay, 0)
     // This is always false by default cause apparently even imperial system users don't use it for perf temps?
     CONFIG_GLOBAL_PROPERTY(bool, useFahrenheitPerformance, false)
     // Attempt to guess based on locale

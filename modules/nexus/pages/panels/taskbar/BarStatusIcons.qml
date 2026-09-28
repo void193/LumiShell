@@ -9,6 +9,7 @@ PageBase {
 
     readonly property var builtinIcons: ({
             privacy: qsTr("Privacy"),
+            netSpeed: qsTr("Network speed"),
             lockStatus: qsTr("Lock keys"),
             kbLayout: qsTr("Keyboard layout"),
             audio: qsTr("Speakers"),

@@ -77,6 +77,14 @@ StyledRect {
                     }
                 }
                 DelegateChoice {
+                    roleValue: "netSpeed"
+                    delegate: EntryWrapper {
+                        NetSpeed {
+                            colour: root.colour
+                        }
+                    }
+                }
+                DelegateChoice {
                     roleValue: "lockStatus"
                     delegate: EntryWrapper {
                         LockStatus {
