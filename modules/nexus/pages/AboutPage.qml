@@ -70,13 +70,13 @@ PageBase {
                 StyledText {
                     Layout.alignment: Qt.AlignHCenter
                     Layout.topMargin: Tokens.spacing.small
-                    text: "Caelestia"
+                    text: "LumiShell"
                     font: Tokens.font.headline.builders.large.width(110).build()
                 }
 
                 StyledText {
                     Layout.alignment: Qt.AlignHCenter
-                    text: CUtils.version ? `v${CUtils.version}` : "…"
+                    text: CUtils.version ? `based on Caelestia v${CUtils.version}` : "…"
                     color: Colours.palette.m3onSurfaceVariant
                     font: Tokens.font.body.medium
                 }
