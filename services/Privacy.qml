@@ -399,6 +399,27 @@ Singleton {
         }
     }
 
+    // One-line status for the terminal prompt: "tor Sweden", "vpn wg0", "offline", or empty when exposed
+    readonly property string promptStatus: {
+        if (!networkingEnabled)
+            return "offline";
+        if (vpnActive)
+            return `vpn ${vpnName}`;
+        if (torRouting)
+            return `tor ${torExitCountry}`.trim();
+        return "";
+    }
+
+    onPromptStatusChanged: promptFile.setText(promptStatus ? promptStatus + "\n" : "")
+
+    FileView {
+        id: promptFile
+
+        path: `${Paths.state}/privacy-status`
+        printErrors: false
+        Component.onCompleted: setText(root.promptStatus ? root.promptStatus + "\n" : "")
+    }
+
     FileView {
         path: `${Paths.state}/privacy.json`
         watchChanges: true
