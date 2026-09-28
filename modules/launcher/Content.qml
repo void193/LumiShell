@@ -18,8 +18,51 @@ Item {
     readonly property int padding: Tokens.padding.large
     readonly property int rounding: Tokens.rounding.extraLarge
 
-    implicitWidth: listWrapper.width + padding * 2
-    implicitHeight: search.height + listWrapper.height + padding + search.anchors.bottomMargin
+    implicitWidth: Math.max(listWrapper.width + padding * 2, colorFilterLoader.item && colorFilterLoader.item.visible ? colorFilterLoader.item.implicitWidth + padding * 2 : 0)
+    implicitHeight: search.height + listWrapper.height + padding + search.anchors.bottomMargin + (wallpaperButtonsRow.visible ? wallpaperButtonsRow.implicitHeight + root.padding : 0) + (colorFilterLoader.item && colorFilterLoader.item.visible ? colorFilterLoader.item.implicitHeight - Tokens.spacing.small : 0)
+
+    property real lastRandomTime: 0
+
+    function selectRandomWallpaper(): void {
+        const now = Date.now();
+        if (now - lastRandomTime < 80)
+            return;
+        lastRandomTime = now;
+
+        if (list.currentList && list.currentList.count > 0) {
+            let count = list.currentList.count;
+            let current = list.currentList.currentIndex;
+            let randomIndex = current;
+            if (count > 1) {
+                while (randomIndex === current) {
+                    randomIndex = Math.floor(Math.random() * count);
+                }
+            }
+            list.currentList.currentIndex = randomIndex;
+            list.currentList.positionViewAtIndex(randomIndex, PathView.SnapPosition);
+        } else {
+            Wallpapers.setRandom();
+        }
+    }
+
+    function triggerRefresh(): void {
+        if (refreshBtn.isLoading)
+            return;
+        refreshBtn.isLoading = true;
+        refreshBtn.dotPhase = 0;
+        Wallpapers.refreshWallpapers();
+        finishTimer.start();
+    }
+
+    Loader {
+        id: colorFilterLoader
+        active: list.showWallpapers
+        asynchronous: true
+        anchors.bottom: listWrapper.top
+        anchors.bottomMargin: -18
+        anchors.horizontalCenter: parent.horizontalCenter
+        sourceComponent: ColorFilterBar {}
+    }
 
     Item {
         id: listWrapper
@@ -28,7 +71,7 @@ Item {
         implicitHeight: list.height + root.padding
 
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.bottom: search.top
+        anchors.bottom: wallpaperButtonsRow.visible ? wallpaperButtonsRow.top : search.top
         anchors.bottomMargin: root.padding
 
         ContentList {
@@ -41,6 +84,72 @@ Item {
             search: search
             padding: root.padding
             rounding: root.rounding
+        }
+    }
+
+    Row {
+        id: wallpaperButtonsRow
+        visible: list.showWallpapers
+        anchors.bottom: search.top
+        anchors.bottomMargin: root.padding
+        anchors.horizontalCenter: parent.horizontalCenter
+        spacing: Tokens.spacing.medium
+
+        IconTextButton {
+            icon: "collections"
+            text: qsTr("All")
+            isToggle: true
+            checked: Wallpapers.filterMode === 2
+            onClicked: Wallpapers.filterMode = 2
+        }
+        IconTextButton {
+            icon: "image"
+            text: qsTr("Static")
+            isToggle: true
+            checked: Wallpapers.filterMode === 0
+            onClicked: Wallpapers.filterMode = 0
+        }
+        IconTextButton {
+            icon: "smart_display"
+            text: qsTr("Live")
+            isToggle: true
+            checked: Wallpapers.filterMode === 1
+            onClicked: Wallpapers.filterMode = 1
+        }
+        IconTextButton {
+            icon: "shuffle"
+            text: qsTr("Random")
+            onClicked: root.selectRandomWallpaper()
+        }
+        IconTextButton {
+            id: refreshBtn
+            
+            icon: isLoading ? hourglassFrames[dotPhase] : "refresh"
+            text: isLoading ? qsTr("Refreshing") : qsTr("Refresh")
+            
+            property bool isLoading: false
+            property int dotPhase: 0
+            property var hourglassFrames: [
+                "hourglass_empty",
+                "hourglass_top",
+                "hourglass_bottom",
+                "hourglass_full"
+            ]
+
+            Timer {
+                running: refreshBtn.isLoading
+                repeat: true
+                interval: 300
+                onTriggered: refreshBtn.dotPhase = (refreshBtn.dotPhase + 1) % 4
+            }
+
+            Timer {
+                id: finishTimer
+                interval: 1200
+                onTriggered: refreshBtn.isLoading = false
+            }
+
+            onClicked: root.triggerRefresh()
         }
     }
 
@@ -83,9 +192,59 @@ Item {
         Keys.onUpPressed: list.currentList?.decrementCurrentIndex()
         Keys.onDownPressed: list.currentList?.incrementCurrentIndex()
 
+        Keys.onLeftPressed: event => {
+            if (list.showWallpapers) {
+                Wallpapers.cycleFilterMode(true);
+                event.accepted = true;
+            }
+        }
+
+        Keys.onRightPressed: event => {
+            if (list.showWallpapers) {
+                Wallpapers.cycleFilterMode(false);
+                event.accepted = true;
+            }
+        }
+
         Keys.onEscapePressed: root.screenState.launcher = false
 
+        Keys.onBacktabPressed: event => {
+            if (list.showWallpapers) {
+                Wallpapers.cycleColorFilter(false);
+                event.accepted = true;
+            } else if (GlobalConfig.launcher.vimKeybinds) {
+                list.currentList?.decrementCurrentIndex();
+                event.accepted = true;
+            }
+        }
+
+        Keys.onTabPressed: event => {
+            if (list.showWallpapers) {
+                if (event.modifiers & Qt.ShiftModifier) {
+                    Wallpapers.cycleColorFilter(false);
+                } else {
+                    root.selectRandomWallpaper();
+                }
+                event.accepted = true;
+            } else if (GlobalConfig.launcher.vimKeybinds) {
+                if (event.modifiers & Qt.ShiftModifier) {
+                    list.currentList?.decrementCurrentIndex();
+                } else {
+                    list.currentList?.incrementCurrentIndex();
+                }
+                event.accepted = true;
+            }
+        }
+
         Keys.onPressed: event => {
+            if (list.showWallpapers) {
+                if (event.modifiers & Qt.ControlModifier && event.key === Qt.Key_R) {
+                    root.triggerRefresh();
+                    event.accepted = true;
+                    return;
+                }
+            }
+
             if (!GlobalConfig.launcher.vimKeybinds)
                 return;
 
@@ -97,12 +256,6 @@ Item {
                     list.currentList?.decrementCurrentIndex();
                     event.accepted = true;
                 }
-            } else if (event.key === Qt.Key_Tab) {
-                list.currentList?.incrementCurrentIndex();
-                event.accepted = true;
-            } else if (event.key === Qt.Key_Backtab || (event.key === Qt.Key_Tab && (event.modifiers & Qt.ShiftModifier))) {
-                list.currentList?.decrementCurrentIndex();
-                event.accepted = true;
             }
         }
 
@@ -110,8 +263,10 @@ Item {
 
         Connections {
             function onLauncherChanged(): void {
-                if (!root.screenState.launcher)
+                if (!root.screenState.launcher) {
                     search.text = "";
+                    Wallpapers.colorFilter = "";
+                }
             }
 
             function onSessionChanged(): void {

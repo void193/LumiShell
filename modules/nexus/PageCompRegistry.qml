@@ -36,6 +36,9 @@ QtObject {
                 Component {
                     ColourSelect {}
                 }
+                Component {
+                    WallpaperSettings {}
+                }
             }
         },
 
@@ -195,7 +198,6 @@ QtObject {
         ColumnLayout {
             anchors.centerIn: parent
             spacing: Tokens.padding.extraSmall
-
             MaterialIcon {
                 Layout.alignment: Qt.AlignHCenter
                 text: "handyman"

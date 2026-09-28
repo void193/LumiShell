@@ -14,6 +14,24 @@ Singleton {
         nexusComp.createObject(parent ?? dummy, props);
     }
 
+    function openWallpaperSettings(): void {
+        const win = nexusComp.createObject(dummy);
+        if (win && win.nexus) {
+            win.nexus.nState.currentPageIdx = 0;
+            win.nexus.nState.openSubPage(4);
+        }
+    }
+
+    function openPage(pageIdx: int, subPageIdx: var): void {
+        const win = nexusComp.createObject(dummy);
+        if (win && win.nexus) {
+            win.nexus.nState.currentPageIdx = pageIdx;
+            if (subPageIdx !== undefined && subPageIdx >= 0) {
+                win.nexus.nState.openSubPage(subPageIdx);
+            }
+        }
+    }
+
     QtObject {
         id: dummy
     }
@@ -23,6 +41,8 @@ Singleton {
 
         FloatingWindow {
             id: win
+
+            readonly property alias nexus: nexus
 
             color: Colours.tPalette.m3surface
             surfaceFormat.opaque: false

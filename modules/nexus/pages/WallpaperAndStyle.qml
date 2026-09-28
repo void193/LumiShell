@@ -123,7 +123,16 @@ PageBase {
                     id: wallImg
 
                     anchors.fill: parent
-                    source: Wallpapers.current
+                    source: {
+                        let path = String(Wallpapers.current);
+                        if (path.match(/\.(mp4|mkv|webm|avi|mov)$/i)) {
+                            let parts = path.split("/");
+                            let homeDir = "/" + parts[1] + "/" + parts[2];
+                            let fileName = parts[parts.length - 1];
+                            return homeDir + "/.cache/caelestia/live_thumbs/" + fileName + ".jpg";
+                        }
+                        return path;
+                    }
                     preventInit: wallIndicatorLoader.opacity > 0
                     fadeOutAnim: Anim.DefaultEffects
                     fadeInAnim: Anim.SlowEffects
@@ -168,6 +177,19 @@ PageBase {
                 verticalPadding: Tokens.padding.medium
                 onClicked: root.nState.openSubPage(3) // Colours page
             }
+
+            IconTextButton {
+                icon: "tune"
+                text: qsTr("Settings")
+                font: Tokens.font.body.large
+                isRound: true
+                shapeMorph: true
+                type: IconTextButton.Tonal
+                horizontalPadding: Tokens.padding.extraLarge
+                verticalPadding: Tokens.padding.medium
+                disabled: !Config.background.wallpaperEnabled
+                onClicked: root.nState.openSubPage(4) // Settings page
+            }
         }
 
         ToggleRow {
@@ -189,10 +211,22 @@ PageBase {
         ToggleRow {
             Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
 
-            last: true
             text: qsTr("Dark theme")
             checked: !Colours.light
             onToggled: Colours.setMode(checked ? "dark" : "light")
+        }
+
+        ToggleRow {
+            Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
+
+            last: true
+            text: qsTr("Wallpaper behavior")
+            subtext: qsTr("Smart pause, battery limits and performance rules")
+            checked: Wallpapers.behaviorEnabled
+            onToggled: {
+                Wallpapers.behaviorEnabled = checked;
+                Wallpapers.saveSettings();
+            }
         }
     }
 }

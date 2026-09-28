@@ -64,7 +64,6 @@ PageBase {
                 type: IconTextButton.Tonal
                 onClicked: {
                     Wallpapers.setRandom();
-                    root.nState.closeSubPage();
                 }
             }
         }
@@ -81,10 +80,75 @@ PageBase {
             }
         }
 
-        StyledText {
+        Item {
             Layout.topMargin: Tokens.spacing.large
-            text: qsTr("Local wallpapers")
-            font: Tokens.font.title.small
+            Layout.fillWidth: true
+            implicitHeight: Math.max(titleText.implicitHeight, filterButtons.implicitHeight)
+
+            StyledText {
+                id: titleText
+                anchors.left: parent.left
+                anchors.verticalCenter: parent.verticalCenter
+                text: qsTr("Local wallpapers")
+                font: Tokens.font.title.small
+            }
+
+            Row {
+                id: filterButtons
+                anchors.centerIn: parent
+                spacing: Tokens.spacing.small
+
+                IconTextButton {
+                    icon: "image"
+                    text: qsTr("Static")
+                    isToggle: true
+                    checked: Wallpapers.filterMode === 0
+                    onClicked: Wallpapers.filterMode = 0
+                }
+                IconTextButton {
+                    icon: "smart_display"
+                    text: qsTr("Live")
+                    isToggle: true
+                    checked: Wallpapers.filterMode === 1
+                    onClicked: Wallpapers.filterMode = 1
+                }
+                IconTextButton {
+                    id: refreshBtn
+                    
+                    icon: isLoading ? hourglassFrames[dotPhase] : "refresh"
+                    text: isLoading ? qsTr("Refreshing") : qsTr("Refresh")
+                    
+                    property bool isLoading: false
+                    property int dotPhase: 0
+                    property var hourglassFrames: [
+                        "hourglass_empty",
+                        "hourglass_top",
+                        "hourglass_bottom",
+                        "hourglass_full"
+                    ]
+
+                    Timer {
+                        running: refreshBtn.isLoading
+                        repeat: true
+                        interval: 300
+                        onTriggered: refreshBtn.dotPhase = (refreshBtn.dotPhase + 1) % 4
+                    }
+
+                    Timer {
+                        id: finishTimer
+                        interval: 1200
+                        onTriggered: refreshBtn.isLoading = false
+                    }
+
+                    onClicked: {
+                        if (isLoading) return;
+                        isLoading = true;
+                        dotPhase = 0;
+                        Wallpapers.refreshWallpapers();
+                        finishTimer.start();
+                    }
+                }
+            }
         }
 
         GridLayout {
@@ -101,10 +165,11 @@ PageBase {
                 model: {
                     const walls = Wallpapers.list;
                     const baseDir = Paths.wallsdir;
+                    const liveDir = Quickshell.env("CAELESTIA_LIVE_WALLPAPERS_DIR") || (Paths.wallsdir.substring(0, Paths.wallsdir.lastIndexOf('/')) + "/Live-Wallpapers");
                     const categories = {};
                     const list = [];
                     for (const w of walls) {
-                        if (w.parentDir !== baseDir) {
+                        if (w.parentDir !== baseDir && w.parentDir !== liveDir) {
                             const category = Wallpapers.getCategoryFor(w);
                             if (category && (!(category in categories) || categories[category].name.localeCompare(w.name) > 0))
                                 categories[category] = w;
@@ -113,7 +178,7 @@ PageBase {
                         }
                     }
                     list.push(...Object.values(categories));
-                    list.sort((a, b) => ((a.parentDir === baseDir) - (b.parentDir === baseDir)) || a.name.localeCompare(b.name));
+                    list.sort((a, b) => ((a.parentDir === baseDir || a.parentDir === liveDir) - (b.parentDir === baseDir || b.parentDir === liveDir)) || a.name.localeCompare(b.name));
                     while (list.length < Config.nexus.wallpapersPerRow)
                         list.push(null);
                     return list;
@@ -126,19 +191,78 @@ PageBase {
                     opacity: modelData ? 1 : 0
                     enabled: modelData
 
-                    source: String(modelData?.path ?? "")
+                    source: {
+                        if (!modelData) return "";
+                        let path = String(modelData.path);
+                        if (path.match(/\.(mp4|mkv|webm|avi|mov)$/i)) {
+                            let parts = path.split("/");
+                            let homeDir = "/" + parts[1] + "/" + parts[2];
+                            let fileName = parts[parts.length - 1];
+                            return homeDir + "/.cache/caelestia/live_thumbs/" + fileName + ".jpg";
+                        }
+                        return path;
+                    }
+                    formatIcon: {
+                        if (!modelData) return "";
+                        const liveDir = Quickshell.env("CAELESTIA_LIVE_WALLPAPERS_DIR") || (Paths.wallsdir.substring(0, Paths.wallsdir.lastIndexOf('/')) + "/Live-Wallpapers");
+                        if (modelData.parentDir !== Paths.wallsdir && modelData.parentDir !== liveDir) {
+                            return "folder";
+                        }
+                        return String(modelData.path).match(/\.(mp4|mkv|webm|avi|mov)$/i) ? "smart_display" : "image";
+                    }
+                    formatText: {
+                        if (!modelData) return "";
+                        const liveDir = Quickshell.env("CAELESTIA_LIVE_WALLPAPERS_DIR") || (Paths.wallsdir.substring(0, Paths.wallsdir.lastIndexOf('/')) + "/Live-Wallpapers");
+                        if (modelData.parentDir !== Paths.wallsdir && modelData.parentDir !== liveDir) return "";
+                        let path = String(modelData.path);
+                        let props = Wallpapers.propertiesCache[path];
+                        if (props) {
+                            let str = typeof props === "string" ? props : (props.info || "");
+                            let parts = str.split(", ");
+                            if (parts.length >= 2) return parts[1];
+                        }
+                        return path.split(".").pop().toUpperCase();
+                    }
+                    fpsText: {
+                        if (!modelData) return "";
+                        const liveDir = Quickshell.env("CAELESTIA_LIVE_WALLPAPERS_DIR") || (Paths.wallsdir.substring(0, Paths.wallsdir.lastIndexOf('/')) + "/Live-Wallpapers");
+                        if (modelData.parentDir !== Paths.wallsdir && modelData.parentDir !== liveDir) return "";
+                        let path = String(modelData.path);
+                        let props = Wallpapers.propertiesCache[path];
+                        if (props) {
+                            let str = typeof props === "string" ? props : (props.info || "");
+                            let parts = str.split(", ");
+                            if (parts.length === 3) return parts[2];
+                        }
+                        return "";
+                    }
+                    resText: {
+                        if (!modelData) return "";
+                        const liveDir = Quickshell.env("CAELESTIA_LIVE_WALLPAPERS_DIR") || (Paths.wallsdir.substring(0, Paths.wallsdir.lastIndexOf('/')) + "/Live-Wallpapers");
+                        if (modelData.parentDir !== Paths.wallsdir && modelData.parentDir !== liveDir) return "";
+                        let path = String(modelData.path);
+                        let props = Wallpapers.propertiesCache[path];
+                        if (props) {
+                            let str = typeof props === "string" ? props : (props.info || "");
+                            let parts = str.split(", ");
+                            return parts[0];
+                        }
+                        return "";
+                    }
                     text: {
                         if (!modelData)
                             return "";
 
-                        if (modelData.parentDir !== Paths.wallsdir) {
+                        const liveDir = Quickshell.env("CAELESTIA_LIVE_WALLPAPERS_DIR") || (Paths.wallsdir.substring(0, Paths.wallsdir.lastIndexOf('/')) + "/Live-Wallpapers");
+                        if (modelData.parentDir !== Paths.wallsdir && modelData.parentDir !== liveDir) {
                             const category = Wallpapers.getCategoryFor(modelData);
                             return category.slice(0, 1).toUpperCase() + category.slice(1);
                         }
                         return modelData.name;
                     }
                     onClicked: {
-                        if (modelData.parentDir !== Paths.wallsdir) {
+                        const liveDir = Quickshell.env("CAELESTIA_LIVE_WALLPAPERS_DIR") || (Paths.wallsdir.substring(0, Paths.wallsdir.lastIndexOf('/')) + "/Live-Wallpapers");
+                        if (modelData.parentDir !== Paths.wallsdir && modelData.parentDir !== liveDir) {
                             root.nState.selectedWallpaperCategory = Wallpapers.getCategoryFor(modelData);
                             root.nState.openSubPage(2); // Category page
                         } else {

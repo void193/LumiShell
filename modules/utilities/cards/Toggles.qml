@@ -139,6 +139,23 @@ StyledRect {
                     }
                 }
                 DelegateChoice {
+                    roleValue: "nightLight"
+                    delegate: Toggle {
+                        icon: "nightlight"
+                        checked: NightLight.enabled
+                        onClicked: NightLight.toggle()
+
+                        WheelHandler {
+                            onWheel: event => {
+                                if (event.angleDelta.y > 0)
+                                    NightLight.increaseIntensity();
+                                else if (event.angleDelta.y < 0)
+                                    NightLight.decreaseIntensity();
+                            }
+                        }
+                    }
+                }
+                DelegateChoice {
                     roleValue: "vpn"
                     delegate: Toggle {
                         icon: "vpn_key"
