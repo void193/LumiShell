@@ -38,6 +38,8 @@ depends=(
     'qt6-declarative'
     'qt6-imageformats'
     'qt6-m3shapes-git'
+    'qt6-multimedia'
+    'qt6-multimedia-ffmpeg'
 
     # CLI
     'python'
