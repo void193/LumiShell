@@ -4,7 +4,7 @@
 # Usage: cd packaging/arch && makepkg -si
 
 pkgname=lumishell
-pkgver=2.4.0
+pkgver=2.4.0.r632.gd18ebf1
 pkgrel=1
 pkgdesc='LumiShell: a minimal Quickshell desktop shell for Hyprland, with its CLI'
 arch=('x86_64')
@@ -76,7 +76,10 @@ pkgver() {
 build() {
     cmake -S "$_repo" -B "$_repo/build" -G Ninja \
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-        -DCMAKE_INSTALL_PREFIX=/ \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DINSTALL_LIBDIR=lib/lumishell \
+        -DINSTALL_QMLDIR=lib/qt6/qml \
+        -DINSTALL_QSCONFDIR=/etc/xdg/quickshell/lumishell \
         -DVERSION="${pkgver%%.r*}" \
         -DGIT_REVISION="$(git -C "$_repo" rev-parse HEAD)" \
         -DDISTRIBUTOR="LumiShell PKGBUILD"
