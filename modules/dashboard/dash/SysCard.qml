@@ -8,8 +8,8 @@ import qs.components
 import qs.services
 import qs.utils
 
-// Dashboard banner: the Lumi mark, a terminal-style headline with the security
-// status and date, and a roomy grid of system facts. No name or photo.
+// Dashboard banner: the Lumi mark, the security status and date, and a roomy grid
+// of system facts. No name or photo.
 Item {
     id: root
 
@@ -48,7 +48,7 @@ Item {
         }
     }
 
-    // Headline: "lumi_" with a slow cursor, then status and date
+    // Security status and date
     ColumnLayout {
         id: headline
 
@@ -56,42 +56,6 @@ Item {
         anchors.leftMargin: Tokens.spacing.extraLarge
         anchors.verticalCenter: parent.verticalCenter
         spacing: Tokens.spacing.extraSmall
-
-        Row {
-            StyledText {
-                text: "lumi"
-                color: Colours.palette.m3onSurface
-                font: Tokens.font.headline.builders.small.weight(Font.Medium).build()
-            }
-
-            StyledText {
-                text: "_"
-                color: Colours.palette.m3primary
-                font: Tokens.font.headline.builders.small.weight(Font.Medium).build()
-
-                SequentialAnimation on opacity {
-                    running: root.visible
-                    loops: Animation.Infinite
-
-                    NumberAnimation {
-                        to: 0
-                        duration: 600
-                        easing.type: Easing.InOutQuad
-                    }
-                    PauseAnimation {
-                        duration: 300
-                    }
-                    NumberAnimation {
-                        to: 1
-                        duration: 600
-                        easing.type: Easing.InOutQuad
-                    }
-                    PauseAnimation {
-                        duration: 500
-                    }
-                }
-            }
-        }
 
         RowLayout {
             spacing: Tokens.spacing.small
@@ -107,8 +71,8 @@ Item {
             StyledText {
                 animate: true
                 text: root.status
-                color: root.secured ? Colours.palette.m3primary : Colours.palette.m3onSurfaceVariant
-                font: Tokens.font.body.medium
+                color: root.secured ? Colours.palette.m3primary : Colours.palette.m3onSurface
+                font: Tokens.font.title.builders.small.weight(Font.Medium).build()
             }
         }
 

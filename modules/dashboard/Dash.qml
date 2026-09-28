@@ -12,7 +12,7 @@ GridLayout {
     rowSpacing: Tokens.spacing.medium
     columnSpacing: Tokens.spacing.medium
 
-    // Row 0: banner across everything but the media card
+    // Row 0: banner across the full width
     Rect {
         Layout.row: 0
         Layout.column: 0
@@ -80,22 +80,6 @@ GridLayout {
 
         Resources {
             id: resources
-        }
-    }
-
-    // Media spans both rows on the right
-    Rect {
-        Layout.row: 0
-        Layout.column: 4
-        Layout.rowSpan: 2
-        Layout.preferredWidth: media.implicitWidth
-        Layout.minimumHeight: media.implicitHeight
-        Layout.fillHeight: true
-
-        radius: Tokens.rounding.extraLarge * 2
-
-        Media {
-            id: media
         }
     }
 
