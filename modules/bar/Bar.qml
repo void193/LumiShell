@@ -83,8 +83,14 @@ ColumnLayout {
             const specialWs = mon?.lastIpcObject.specialWorkspace.name;
             if (specialWs?.length > 0)
                 Hypr.dispatch(Hypr.usingLua ? `hl.dsp.workspace.toggle_special("${specialWs.slice(8)}")` : `togglespecialworkspace ${specialWs.slice(8)}`);
-            else if (angleDelta.y < 0 || (GlobalConfig.bar.workspaces.perMonitorWorkspaces ? mon.activeWorkspace?.id : Hypr.activeWsId) > 1)
-                Hypr.dispatch(Hypr.usingLua ? `hl.dsp.focus({ workspace = "r${angleDelta.y > 0 ? "-" : "+"}1" })` : `workspace r${angleDelta.y > 0 ? "-" : "+"}1`);
+            else if (angleDelta.y !== 0) {
+                // Cycle within the shown workspaces, wrapping around instead of creating new ones
+                const count = Math.max(1, Config.bar.workspaces.shown);
+                const id = (GlobalConfig.bar.workspaces.perMonitorWorkspaces ? mon?.activeWorkspace?.id : Hypr.activeWsId) ?? 1;
+                const dir = angleDelta.y > 0 ? -1 : 1;
+                const target = id < 1 || id > count ? (dir > 0 ? 1 : count) : ((id - 1 + dir + count) % count) + 1;
+                Hypr.dispatch(Hypr.usingLua ? `hl.dsp.focus({ workspace = ${target} })` : `workspace ${target}`);
+            }
         } else if (y < screen.height / 2 && Config.bar.scrollActions.volume) {
             // Volume scroll on top half
             if (angleDelta.y > 0)
