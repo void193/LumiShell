@@ -12,8 +12,9 @@ Item {
     property color topColour: Colours.palette.m3primary
     property color bottomColour: Colours.palette.m3onSurface
 
-    implicitWidth: designWidth
-    implicitHeight: designHeight
+    // Small natural size (the old logo's height), scaled from the design size
+    implicitWidth: implicitHeight * designWidth / designHeight
+    implicitHeight: 90
 
     Shape {
         anchors.centerIn: parent
