@@ -8,6 +8,7 @@ PageBase {
     id: root
 
     readonly property var builtinIcons: ({
+            privacy: qsTr("Privacy"),
             lockStatus: qsTr("Lock keys"),
             kbLayout: qsTr("Keyboard layout"),
             audio: qsTr("Speakers"),

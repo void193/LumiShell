@@ -42,13 +42,6 @@ QtObject {
             category: "connectivity"
         },
 
-        // System
-        {
-            label: qsTr("Updates"),
-            icon: "update",
-            description: qsTr("System updates"),
-            category: "system"
-        },
 
         // Shell
         {
@@ -66,13 +59,13 @@ QtObject {
         {
             label: qsTr("Services"),
             icon: "build",
-            description: qsTr("Poll intervals, lyrics backend"),
+            description: qsTr("Poll intervals, media, system"),
             category: "shell"
         },
         {
             label: qsTr("Language & region"),
             icon: "globe",
-            description: qsTr("UI language, weather location, display units"),
+            description: qsTr("UI language, display units, clock"),
             category: "shell"
         },
 

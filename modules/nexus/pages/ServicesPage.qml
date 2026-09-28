@@ -10,22 +10,6 @@ import qs.modules.nexus.common
 PageBase {
     id: root
 
-    // Lyrics backends, ordered to match config::LyricsBackend (Auto, Local, LRCLIB, NetEase)
-    readonly property list<MenuItem> lyricsItems: [
-        MenuItem {
-            text: qsTr("Auto")
-        },
-        MenuItem {
-            text: "Local"
-        },
-        MenuItem {
-            text: "LRCLIB"
-        },
-        MenuItem {
-            text: "NetEase"
-        }
-    ]
-
     // GPU types, ordered to match config::GpuType (Auto, Nvidia, Generic, None)
     readonly property list<MenuItem> gpuItems: [
         MenuItem {
@@ -117,21 +101,13 @@ PageBase {
             onMoved: v => GlobalConfig.nexus.networkRescanInterval = Math.round(v * 1000)
         }
 
-        // Media & lyrics
+        // Media
         SectionHeader {
-            text: qsTr("Media & lyrics")
+            text: qsTr("Media")
         }
 
         SelectRow {
             first: true
-            label: qsTr("Lyrics backend")
-            subtext: qsTr("Source used to fetch synced lyrics")
-            menuItems: root.lyricsItems
-            active: root.lyricsItems[Lyrics.preferredBackend] ?? root.lyricsItems[0]
-            onSelected: item => Lyrics.preferredBackend = root.lyricsItems.indexOf(item)
-        }
-
-        SelectRow {
             last: true
             label: qsTr("Default player")
             subtext: qsTr("Preferred media player when several are open")

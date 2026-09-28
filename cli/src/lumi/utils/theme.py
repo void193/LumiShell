@@ -2,9 +2,7 @@ import fcntl
 import json
 import os
 import re
-import shutil
 import subprocess
-import tempfile
 from pathlib import Path
 
 from lumi.utils.colour import get_dynamic_colours
@@ -14,7 +12,6 @@ from lumi.utils.paths import (
     atomic_write,
     c_state_dir,
     config_dir,
-    data_dir,
     get_config,
     templates_dir,
     theme_dir,
@@ -36,13 +33,6 @@ def gen_lua(colours: dict[str, str]) -> str:
         lua += f'  {name} = "{colour}",\n'
     lua += "}"
     return lua
-
-
-def gen_scss(colours: dict[str, str]) -> str:
-    scss = ""
-    for name, colour in colours.items():
-        scss += f"${name}: #{colour};\n"
-    return scss
 
 
 def gen_replace(colours: dict[str, str], template: Path, hash: bool = False) -> str:
@@ -147,29 +137,6 @@ def apply_terms(sequences: str) -> None:
 def apply_hypr(conf: str) -> None:
     ext = "lua" if is_lua_config() else "conf"
     atomic_write(config_dir / f"hypr/scheme/current.{ext}", conf)
-
-
-@log_exception
-def apply_discord(scss: str) -> None:
-    with tempfile.TemporaryDirectory("w") as tmp_dir:
-        (Path(tmp_dir) / "_colours.scss").write_text(scss)
-        conf = subprocess.check_output(["sass", "-I", tmp_dir, templates_dir / "discord.scss"], text=True)
-
-    for client in "Equicord", "Vencord", "BetterDiscord", "equibop", "vesktop", "legcord":
-        atomic_write(config_dir / client / "themes/lumi.theme.css", conf)
-
-
-@log_exception
-def apply_pandora(colours: dict[str, str], mode: str) -> None:
-    template = gen_replace(colours, templates_dir / "pandora.json", hash=True)
-    template = template.replace("{{ $mode }}", mode)
-    atomic_write(data_dir / "PandoraLauncher/themes/lumi.json", template)
-
-
-@log_exception
-def apply_spicetify(colours: dict[str, str], mode: str) -> None:
-    template = gen_replace(colours, templates_dir / f"spicetify-{mode}.ini")
-    atomic_write(config_dir / "spicetify/Themes/lumi/color.ini", template)
 
 
 @log_exception
@@ -334,60 +301,6 @@ def apply_qt(colours: dict[str, str], mode: str, icon_theme: str | None = None) 
 
 
 @log_exception
-def apply_warp(colours: dict[str, str], mode: str) -> None:
-    warp_mode = "darker" if mode == "dark" else "lighter"
-
-    template = gen_replace(colours, templates_dir / "warp.yaml", hash=True)
-    template = template.replace("{{ $warp_mode }}", warp_mode)
-    atomic_write(data_dir / "warp-terminal/themes/lumi.yaml", template)
-
-
-@log_exception
-def apply_chromium(colours: dict[str, str]) -> None:
-    surface_hex = colours["surface"]
-    theme_color = f"#{surface_hex}"
-    browsers = [
-        ("chromium", Path("/etc/chromium/policies/managed")),
-        ("brave", Path("/etc/brave/policies/managed")),
-        ("google-chrome-stable", Path("/etc/opt/chrome/policies/managed")),
-    ]
-
-    for cmd, policy_dir in browsers:
-        if shutil.which(cmd) is None:
-            continue
-        if not policy_dir.is_dir():
-            subprocess.run(["sudo", "-n", "mkdir", "-p", str(policy_dir)], stderr=subprocess.DEVNULL)
-        if not policy_dir.is_dir():
-            print(f"Unable to create {policy_dir} directory")
-            continue
-
-        # Use tee instead of atomic_write cause we need sudo
-        subprocess.run(
-            ["sudo", "-n", "tee", str(policy_dir / "lumi.json")],
-            input=json.dumps({"BrowserThemeColor": theme_color, "BrowserColorScheme": "device"}),
-            text=True,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-        )
-        subprocess.run(
-            [cmd, "--refresh-platform-policy", "--no-startup-window"],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-        )
-
-
-def apply_zed(colours: dict[str, str], mode: str) -> None:
-    theme_path = config_dir / "zed/themes/lumi.json"
-    # Zed's file watcher does not detect changes through symlinks,
-    # so resolve to a regular file before writing
-    if theme_path.is_symlink():
-        theme_path.unlink()
-
-    content = gen_replace_dynamic(colours, templates_dir / "zed.json", mode)
-    atomic_write(theme_path, content)
-
-
-@log_exception
 def apply_cava(colours: dict[str, str]) -> None:
     template = gen_replace(colours, templates_dir / "cava.conf", hash=True)
     atomic_write(config_dir / "cava/config", template)
@@ -426,12 +339,6 @@ def apply_colours(colours: dict[str, str], mode: str) -> None:
                 apply_terms(gen_sequences(colours))
             if check("enableHypr"):
                 apply_hypr(gen_lua(colours) if is_lua_config() else gen_conf(colours))
-            if check("enableDiscord"):
-                apply_discord(gen_scss(colours))
-            if check("enableSpicetify"):
-                apply_spicetify(colours, mode)
-            if check("enablePandora"):
-                apply_pandora(colours, mode)
             if check("enableFuzzel"):
                 apply_fuzzel(colours)
             if check("enableBtop"):
@@ -445,12 +352,6 @@ def apply_colours(colours: dict[str, str], mode: str) -> None:
                 apply_gtk(colours, mode, icon_theme)
             if check("enableQt"):
                 apply_qt(colours, mode, icon_theme)
-            if check("enableWarp"):
-                apply_warp(colours, mode)
-            if check("enableChromium"):
-                apply_chromium(colours)
-            if check("enableZed"):
-                apply_zed(colours, mode)
             if check("enableCava"):
                 apply_cava(colours)
             apply_user_templates(colours, mode)

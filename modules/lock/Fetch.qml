@@ -99,9 +99,6 @@ StyledRect {
                         if (rHeight > (hasBatt ? Tokens.sizes.lock.fetch4LinesHeight : Tokens.sizes.lock.fetch3LinesHeight))
                             items.push(`WM  : ${SysInfo.wm}`);
 
-                        if (!hasBatt || rHeight > Tokens.sizes.lock.fetch3LinesHeight)
-                            items.push(`USER: ${SysInfo.user}`);
-
                         items.push(`UP  : ${SysInfo.uptime}`);
 
                         if (hasBatt)

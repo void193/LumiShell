@@ -9,7 +9,7 @@ import qs.modules.nexus.common
 PageBase {
     id: root
 
-    // Temperature units (index 0 = Celsius, 1 = Fahrenheit — matches Weather.formatTemp)
+    // Temperature units (index 0 = Celsius, 1 = Fahrenheit)
     readonly property list<MenuItem> tempItems: [
         MenuItem {
             text: "°C"
@@ -87,50 +87,6 @@ PageBase {
             }
         }
 
-        // Weather
-        SectionHeader {
-            text: qsTr("Weather")
-        }
-
-        // Placeholder until the map-based location picker lands
-        ConnectedRect {
-            Layout.fillWidth: true
-            first: true
-            last: true
-            implicitHeight: comingSoon.implicitHeight + Tokens.padding.extraLarge * 2
-
-            ColumnLayout {
-                id: comingSoon
-
-                anchors.centerIn: parent
-                width: parent.width - Tokens.padding.largeIncreased * 2
-                spacing: Tokens.padding.extraSmall
-
-                MaterialIcon {
-                    Layout.alignment: Qt.AlignHCenter
-                    text: "map"
-                    color: Colours.palette.m3outlineVariant
-                    fontStyle: Tokens.font.icon.extraLarge
-                }
-
-                StyledText {
-                    Layout.alignment: Qt.AlignHCenter
-                    text: qsTr("Location picker coming soon")
-                    color: Colours.palette.m3outlineVariant
-                    font: Tokens.font.title.small
-                }
-
-                StyledText {
-                    Layout.fillWidth: true
-                    horizontalAlignment: Text.AlignHCenter
-                    wrapMode: Text.WordWrap
-                    text: qsTr("Choose your weather location on a map in a future update")
-                    color: Colours.palette.m3outlineVariant
-                    font: Tokens.font.body.small
-                }
-            }
-        }
-
         // Units
         SectionHeader {
             text: qsTr("Units")
@@ -138,14 +94,6 @@ PageBase {
 
         SelectRow {
             first: true
-            label: qsTr("Temperature")
-            subtext: qsTr("Units for weather temperatures")
-            menuItems: root.tempItems
-            active: root.tempItems[GlobalConfig.services.useFahrenheit ? 1 : 0]
-            onSelected: item => GlobalConfig.services.useFahrenheit = root.tempItems.indexOf(item) === 1
-        }
-
-        SelectRow {
             last: true
             label: qsTr("System temperatures")
             subtext: qsTr("Units for CPU and GPU temperatures")

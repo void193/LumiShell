@@ -4,10 +4,7 @@ import QtQuick
 import M3Shapes
 import Lumi.Config
 import qs.components
-import qs.components.effects
-import qs.components.images
 import qs.services
-import qs.utils
 
 Item {
     id: root
@@ -33,24 +30,12 @@ Item {
         layer.enabled: true
     }
 
-    MaterialIcon {
+    // No face or username on the lock screen, just the Lumi mark
+    Logo {
         anchors.centerIn: parent
+        implicitHeight: root.centerWidth / 3.2
 
-        text: "person"
-        color: Colours.palette.m3onSurfaceVariant
-        fontStyle: Tokens.font.icon.size(root.centerWidth / 4).build()
-        visible: pfp.status !== Image.Ready
-    }
-
-    CachingImage {
-        id: pfp
-
-        anchors.fill: shape
-        path: `${Paths.home}/.face`
-
-        layer.enabled: true
-        layer.effect: Mask {
-            maskSource: shape
-        }
+        topColour: Colours.palette.m3primary
+        bottomColour: Colours.palette.m3onSurfaceVariant
     }
 }

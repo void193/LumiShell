@@ -47,17 +47,12 @@ ColumnLayout {
             sourceComponent: ColumnLayout {
                 spacing: Tokens.spacing.largeIncreased
 
-                Image {
-                    asynchronous: true
-                    source: Paths.absolutePath(Config.paths.lockNoNotifsPic)
-                    fillMode: Image.PreserveAspectFit
-                    sourceSize.width: clipRect.width * 0.8 * ((QsWindow.window as QsWindow)?.devicePixelRatio ?? 1)
+                Logo {
+                    Layout.alignment: Qt.AlignHCenter
+                    implicitHeight: Math.min(clipRect.width * 0.35, 140)
 
-                    layer.enabled: true
-                    layer.effect: Colouriser {
-                        colorizationColor: Colours.palette.m3outlineVariant
-                        brightness: 1
-                    }
+                    topColour: Colours.palette.m3outlineVariant
+                    bottomColour: Colours.palette.m3outlineVariant
                 }
 
                 StyledText {

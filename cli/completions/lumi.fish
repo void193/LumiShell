@@ -1,7 +1,7 @@
 set -l seen '__fish_seen_subcommand_from'
 set -l has_opt '__fish_contains_opt'
 
-set -l commands shell toggle scheme screenshot clipboard emoji-picker wallpaper resizer
+set -l commands shell toggle scheme screenshot clipboard emoji-picker wallpaper
 set -l not_seen "not $seen $commands"
 
 # Disable file completions
@@ -18,7 +18,6 @@ complete -c lumi -n $not_seen -a 'screenshot' -d 'Take a screenshot'
 complete -c lumi -n $not_seen -a 'clipboard' -d 'Open clipboard history'
 complete -c lumi -n $not_seen -a 'emoji' -d 'Emoji/glyph utilities'
 complete -c lumi -n $not_seen -a 'wallpaper' -d 'Manage the wallpaper'
-complete -c lumi -n $not_seen -a 'resizer' -d 'Window resizer'
 
 # Shell
 set -l commands mpris drawers wallpaper notifs
@@ -115,8 +114,3 @@ complete -c lumi -n "$seen wallpaper" -s 'N' -l 'no-smart' -d 'Disable smart mod
 # Emoji
 complete -c lumi -n "$seen emoji" -s 'p' -l 'picker' -d 'Open emoji/glyph picker'
 complete -c lumi -n "$seen emoji" -s 'f' -l 'fetch' -d 'Fetch emoji/glyph data from remote'
-
-# Resizer
-complete -c lumi -n "$seen resizer" -s 'd' -l 'daemon' -d 'Start in daemon mode'
-complete -c lumi -n "$seen resizer" -a 'pip' -d 'Quick pip mode'
-complete -c lumi -n "$seen resizer" -a 'active' -d 'Select the active window'

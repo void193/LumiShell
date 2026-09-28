@@ -57,16 +57,10 @@ PageBase {
         }
 
         ToggleRow {
+            last: true
             text: qsTr("Performance")
             checked: Config.dashboard.showPerformance
             onToggled: GlobalConfig.dashboard.showPerformance = checked
-        }
-
-        ToggleRow {
-            last: true
-            text: qsTr("Weather")
-            checked: Config.dashboard.showWeather
-            onToggled: GlobalConfig.dashboard.showWeather = checked
         }
 
         // Performance widgets

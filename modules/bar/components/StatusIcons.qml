@@ -68,6 +68,15 @@ StyledRect {
                 role: "id"
 
                 DelegateChoice {
+                    roleValue: "privacy"
+                    delegate: EntryWrapper {
+                        PrivacyStatus {
+                            colour: root.colour
+                            parentSpacing: root.spacing
+                        }
+                    }
+                }
+                DelegateChoice {
                     roleValue: "lockStatus"
                     delegate: EntryWrapper {
                         LockStatus {

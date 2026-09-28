@@ -15,11 +15,6 @@ RowLayout {
         Layout.fillWidth: true
         spacing: Tokens.spacing.medium
 
-        WeatherInfo {
-            Layout.fillWidth: true
-            rootHeight: root.height
-        }
-
         Fetch {
             Layout.fillWidth: true
             rootHeight: root.height

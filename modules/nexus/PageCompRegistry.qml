@@ -95,10 +95,6 @@ QtObject {
             }
         },
 
-        // System
-        Component {
-            PlaceholderComp {}
-        },
 
         // Shell
         Component {

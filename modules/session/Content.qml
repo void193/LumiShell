@@ -49,16 +49,17 @@ Column {
         KeyNavigation.down: hibernate
     }
 
-    AnimatedImage {
+    Item {
         width: Tokens.sizes.session.button
         height: Tokens.sizes.session.button
-        sourceSize.width: width * ((QsWindow.window as QsWindow)?.devicePixelRatio ?? 1)
 
-        playing: visible
-        asynchronous: true
-        speed: Config.general.sessionGifSpeed
-        source: Paths.absolutePath(Config.paths.sessionGif)
-        fillMode: AnimatedImage.PreserveAspectFit
+        Logo {
+            anchors.centerIn: parent
+            implicitHeight: parent.height * 0.55
+
+            topColour: Colours.palette.m3primary
+            bottomColour: Colours.palette.m3onSurfaceVariant
+        }
     }
 
     SessionButton {

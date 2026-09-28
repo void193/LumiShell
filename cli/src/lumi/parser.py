@@ -3,7 +3,6 @@ import argparse
 from lumi.subcommands import (
     clipboard,
     emoji,
-    resizer,
     scheme,
     screenshot,
     shell,
@@ -108,26 +107,6 @@ def parse_args() -> tuple[argparse.ArgumentParser, argparse.Namespace]:
         action="store_true",
         help="do not automatically change the scheme mode based on wallpaper colour",
     )
-
-    # Create parser for resizer opts
-    resizer_parser = command_parser.add_parser("resizer", help="window resizer daemon")
-    resizer_parser.set_defaults(cls=resizer.Command)
-    resizer_parser.add_argument("-d", "--daemon", action="store_true", help="start the resizer daemon")
-    resizer_parser.add_argument(
-        "pattern",
-        nargs="?",
-        help="pattern to match against windows ('active' for current window only, 'pip' for quick pip mode)",
-    )
-    resizer_parser.add_argument(
-        "match_type",
-        nargs="?",
-        metavar="match_type",
-        choices=["titleContains", "titleExact", "titleRegex", "initialTitle"],
-        help="type of pattern matching (titleContains,titleExact,titleRegex,initialTitle)",
-    )
-    resizer_parser.add_argument("width", nargs="?", help="width to resize to")
-    resizer_parser.add_argument("height", nargs="?", help="height to resize to")
-    resizer_parser.add_argument("actions", nargs="?", help="comma-separated actions to apply (float,center,pip)")
 
     return parser, parser.parse_args()
 

@@ -7,13 +7,11 @@ import Quickshell.Widgets
 import Lumi
 import Lumi.Config
 import qs.components
-import qs.components.filedialog
 
 Item {
     id: root
 
     required property ScreenState screenState
-    required property FileDialog facePicker
 
     readonly property var dashboardTabs: {
         const allTabs = [
@@ -34,12 +32,6 @@ Item {
                 iconName: "speed",
                 text: qsTr("Performance"),
                 enabled: Config.dashboard.showPerformance
-            },
-            {
-                component: weatherComponent,
-                iconName: "cloud",
-                text: qsTr("Weather"),
-                enabled: Config.dashboard.showWeather
             }
         ];
         return allTabs.filter(tab => tab.enabled);
@@ -157,7 +149,6 @@ Item {
 
                 Dash {
                     screenState: root.screenState
-                    facePicker: root.facePicker
                 }
             }
 
@@ -173,12 +164,6 @@ Item {
                 id: performanceComponent
 
                 Performance {}
-            }
-
-            Component {
-                id: weatherComponent
-
-                WeatherTab {}
             }
 
             Behavior on contentX {

@@ -23,6 +23,7 @@ Item {
     anchors.top: parent.top
     anchors.bottom: parent.bottom
     implicitWidth: Tokens.sizes.dashboard.mediaWidth
+    implicitHeight: controls.y + controls.implicitHeight + Tokens.padding.extraLargeIncreased
 
     Behavior on playerProgress {
         Anim {
@@ -158,23 +159,5 @@ Item {
             disabled: !Players.active?.canGoNext
             onClicked: Players.active?.next()
         }
-    }
-
-    AnimatedImage {
-        id: bongocat
-
-        anchors.top: controls.bottom
-        anchors.bottom: parent.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.topMargin: Tokens.spacing.small
-        anchors.bottomMargin: Tokens.padding.large
-        anchors.margins: Tokens.padding.extraLargeIncreased
-
-        playing: Players.active?.isPlaying ?? false
-        speed: Audio.beatTracker.bpm / Config.general.mediaGifSpeedAdjustment // qmllint disable unresolved-type
-        source: Paths.absolutePath(Config.paths.mediaGif)
-        asynchronous: true
-        fillMode: AnimatedImage.PreserveAspectFit
     }
 }

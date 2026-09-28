@@ -14,10 +14,6 @@ Item {
     implicitWidth: Tokens.sizes.dashboard.mediaTabWidth
     implicitHeight: Tokens.sizes.dashboard.mediaTabHeight
 
-    BackgroundShapes {
-        anchors.fill: parent
-    }
-
     RowLayout {
         anchors.fill: parent
         anchors.margins: Tokens.padding.large
@@ -133,16 +129,17 @@ Item {
                 asynchronous: true
                 active: opacity > 0
 
-                sourceComponent: RowLayout {
-                    spacing: Tokens.spacing.extraLarge
+                sourceComponent: ColumnLayout {
+                    spacing: Tokens.spacing.medium
 
                     Details {
                         Layout.fillWidth: true
+                        Layout.fillHeight: true
                     }
 
-                    LyricsAndSelector {
-                        Layout.fillHeight: true
-                        implicitWidth: Tokens.sizes.dashboard.mediaSectionWidth
+                    PlayerSelector {
+                        Layout.alignment: Qt.AlignHCenter
+                        Layout.bottomMargin: Tokens.padding.small
                     }
                 }
             }
