@@ -21,8 +21,8 @@ Item {
     TextMetrics {
         id: keyMetrics
 
-        font: Tokens.font.mono.small
-        text: "kern"
+        font: Tokens.font.body.small
+        text: "Desktop"
     }
 
     MaterialShape {
@@ -54,23 +54,23 @@ Item {
         spacing: Tokens.spacing.extraSmall
 
         Line {
-            key: "up"
+            key: qsTr("Uptime")
             value: SysInfo.uptime.split(",").slice(0, 2).join(",")
         }
 
         Line {
-            key: "wm"
-            value: SysInfo.wm.toLowerCase()
+            key: qsTr("Desktop")
+            value: SysInfo.wm
         }
 
         Line {
-            key: "kern"
+            key: qsTr("Kernel")
             value: SysInfo.kernel
         }
 
         Line {
-            key: "os"
-            value: (SysInfo.osPrettyName || SysInfo.osName).toLowerCase()
+            key: qsTr("System")
+            value: SysInfo.osPrettyName || SysInfo.osName
         }
     }
 
@@ -85,7 +85,7 @@ Item {
             Layout.preferredWidth: keyMetrics.width
             text: parent.key
             color: Colours.palette.m3primary
-            font: Tokens.font.mono.small
+            font: Tokens.font.body.small
         }
 
         StyledText {
@@ -94,7 +94,7 @@ Item {
             text: parent.value || "…"
             color: Colours.palette.m3onSurface
             elide: Text.ElideRight
-            font: Tokens.font.mono.small
+            font: Tokens.font.body.small
         }
     }
 }

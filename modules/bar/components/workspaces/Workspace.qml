@@ -41,7 +41,7 @@ ColumnLayout {
             anchors.centerIn: parent
             text: root.ws
             color: root.focused || root.isOccupied ? Colours.palette.m3onSurface : Colours.palette.m3outline
-            font: Tokens.font.mono.builders.medium.weight(root.focused || root.isOccupied ? Font.DemiBold : Font.Normal).build()
+            font: Tokens.font.body.builders.medium.weight(root.focused || root.isOccupied ? Font.DemiBold : Font.Normal).build()
 
             Behavior on color {
                 CAnim {}

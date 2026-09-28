@@ -21,8 +21,8 @@ Item {
     TextMetrics {
         id: keyMetrics
 
-        font: Tokens.font.mono.small
-        text: "port"
+        font: Tokens.font.body.small
+        text: "Firewall"
     }
 
     ColumnLayout {
@@ -51,46 +51,46 @@ Item {
                 animate: true
                 text: {
                     if (!Privacy.networkingEnabled)
-                        return "offline";
+                        return qsTr("Offline");
                     if (Privacy.vpnActive)
-                        return `tunneled · ${Privacy.vpnName}`;
+                        return `VPN · ${Privacy.vpnName}`;
                     if (Privacy.torRouting)
-                        return `tor · ${Privacy.torExitCountry || Privacy.torExitIp || "connecting"}`;
-                    return "exposed";
+                        return `Tor · ${Privacy.torExitCountry || Privacy.torExitIp || qsTr("connecting")}`;
+                    return qsTr("Exposed");
                 }
                 color: Privacy.tunneled ? Colours.palette.m3primary : Colours.palette.m3onSurface
-                font: Tokens.font.mono.builders.medium.weight(Font.Medium).build()
+                font: Tokens.font.body.builders.medium.weight(Font.Medium).build()
             }
         }
 
         Line {
-            key: "fw"
-            value: Privacy.firewallActive ? "on" : "off"
+            key: qsTr("Firewall")
+            value: Privacy.firewallActive ? qsTr("On") : qsTr("Off")
             good: Privacy.firewallActive
         }
 
         Line {
-            key: "mac"
-            value: Privacy.macRandom ? "random" : "stock"
+            key: qsTr("MAC")
+            value: Privacy.macRandom ? qsTr("Random") : qsTr("Hardware")
             good: Privacy.macRandom
         }
 
         Line {
-            key: "port"
-            value: Privacy.exposedPorts.length > 0 ? `${Privacy.exposedPorts.length} open` : "closed"
+            key: qsTr("Ports")
+            value: Privacy.exposedPorts.length > 0 ? qsTr("%1 open").arg(Privacy.exposedPorts.length) : qsTr("Closed")
             good: Privacy.exposedPorts.length === 0
             alert: Privacy.exposedPorts.length > 0
         }
 
         Line {
-            key: "mic"
-            value: Privacy.micInUse ? Privacy.micApps.join(", ") : "idle"
+            key: qsTr("Mic")
+            value: Privacy.micInUse ? Privacy.micApps.join(", ") : qsTr("Idle")
             alert: Privacy.micInUse
         }
 
         Line {
-            key: "cam"
-            value: Privacy.camInUse ? "in use" : "idle"
+            key: qsTr("Camera")
+            value: Privacy.camInUse ? qsTr("In use") : qsTr("Idle")
             alert: Privacy.camInUse
         }
     }
@@ -108,7 +108,7 @@ Item {
             Layout.preferredWidth: keyMetrics.width
             text: parent.key
             color: Colours.palette.m3onSurfaceVariant
-            font: Tokens.font.mono.small
+            font: Tokens.font.body.small
         }
 
         StyledText {
@@ -117,7 +117,7 @@ Item {
             text: parent.value
             color: parent.alert ? Colours.palette.m3error : parent.good ? Colours.palette.m3primary : Colours.palette.m3onSurface
             elide: Text.ElideRight
-            font: Tokens.font.mono.small
+            font: Tokens.font.body.small
         }
     }
 }
