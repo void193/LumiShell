@@ -259,7 +259,17 @@ Item {
             }
         }
 
-        Component.onCompleted: forceActiveFocus()
+        function applyPreset(): void {
+            if (root.screenState.launcherPreset) {
+                search.text = root.screenState.launcherPreset;
+                root.screenState.launcherPreset = "";
+            }
+        }
+
+        Component.onCompleted: {
+            forceActiveFocus();
+            applyPreset();
+        }
 
         Connections {
             function onLauncherChanged(): void {
@@ -267,6 +277,10 @@ Item {
                     search.text = "";
                     Wallpapers.colorFilter = "";
                 }
+            }
+
+            function onLauncherPresetChanged(): void {
+                search.applyPreset();
             }
 
             function onSessionChanged(): void {

@@ -15,8 +15,6 @@ qml_module(lumi-services
         memory.cpp
         diskinfo.cpp
         storage.cpp
-        lyriccandidate.cpp
-        lyrics.cpp
         sessionmanager.cpp
         networkusage.cpp
         hyprdevices.cpp

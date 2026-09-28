@@ -15,8 +15,6 @@ class UserPaths : public settings::ObjectNode {
 
     CONFIG_GLOBAL_PROPERTY(
         QString, wallpaperDir, QStandardPaths::writableLocation(QStandardPaths::PicturesLocation) + u"/Wallpapers"_s)
-    CONFIG_GLOBAL_PROPERTY(
-        QString, lyricsDir, QStandardPaths::writableLocation(QStandardPaths::MusicLocation) + u"/Lyrics/"_s)
 };
 
 } // namespace lumi::config

@@ -34,7 +34,6 @@ class ServiceConfig : public settings::ObjectNode {
         DEFAULT_ARG({
             vmap({ { u"from"_s, u"com.github.th_ch.youtube_music"_s }, { u"to"_s, u"YT Music"_s } }),
         }))
-    CONFIG_GLOBAL_ENUM_PROPERTY(LyricsBackend, lyricsBackend, LyricsBackend::Auto)
 };
 
 } // namespace lumi::config

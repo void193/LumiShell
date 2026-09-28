@@ -12,6 +12,9 @@ PersistentProperties {
     property bool utilities
     property bool sidebar
 
+    // Text to pre-fill the launcher search with the next time it opens (e.g. ">wallpaper ")
+    property string launcherPreset
+
     // Dashboard state
     property int dashboardTab
     property date dashboardDate: new Date()

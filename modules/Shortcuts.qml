@@ -2,6 +2,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import Lumi
+import Lumi.Config
 import qs.components.misc
 import qs.services
 import qs.modules.nexus
@@ -74,6 +75,15 @@ Scope {
         }
     }
 
+    // Opens the launcher straight into the wallpaper picker
+    // qmllint disable unresolved-type
+    CustomShortcut {
+        // qmllint enable unresolved-type
+        name: "wallpapers"
+        description: "Open the wallpaper picker"
+        onPressed: root.openWallpapers()
+    }
+
     // qmllint disable unresolved-type
     CustomShortcut {
         // qmllint enable unresolved-type
@@ -106,6 +116,22 @@ Scope {
             const screenState = ShellState.forActive();
             screenState.utilities = !screenState.utilities;
         }
+    }
+
+    function openWallpapers(): void {
+        if (root.hasFullscreen)
+            return;
+        const screenState = ShellState.forActive();
+        screenState.launcherPreset = `${GlobalConfig.launcher.actionPrefix}wallpaper `;
+        screenState.launcher = true;
+    }
+
+    IpcHandler {
+        function wallpapers(): void {
+            root.openWallpapers();
+        }
+
+        target: "launcher"
     }
 
     IpcHandler {
