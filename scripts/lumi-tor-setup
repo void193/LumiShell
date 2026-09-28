@@ -2,7 +2,9 @@
 # One-time setup so Lumi can drive Tor for a user:
 #   - install tor
 #   - open a password-protected control port (used to request new identities)
-#   - let that user start/stop tor and the nftables firewall without a password prompt
+#   - install a lumi-firewall service (the nftables ruleset in /etc/nftables.conf that
+#     actually stays "active" and can be switched off again)
+#   - let that user start/stop tor and the firewall without a password prompt
 # Usage: sudo lumi-tor-setup [user]
 set -euo pipefail
 
@@ -42,14 +44,35 @@ HashedControlPassword $hash
 # <<< lumi
 EOF
 
+echo ":: Installing the lumi-firewall service"
+# Arch's nftables.service loads the rules and exits (and has no stop), so it always
+# reports "inactive" and can't be turned off. This one keeps state and removes its table.
+cat > /etc/systemd/system/lumi-firewall.service <<'UNIT'
+[Unit]
+Description=Lumi firewall (nftables ruleset from /etc/nftables.conf)
+Documentation=man:nft(8)
+Wants=network-pre.target
+Before=network-pre.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/nft -f /etc/nftables.conf
+ExecStop=/usr/bin/nft destroy table inet filter
+
+[Install]
+WantedBy=multi-user.target
+UNIT
+systemctl daemon-reload
+
 echo ":: Allowing $user to start/stop tor and the firewall"
 cat > /etc/polkit-1/rules.d/49-lumi-privacy.rules <<EOF
-// Written by lumi-tor-setup: lets $user toggle Tor and the nftables firewall from Lumi
+// Written by lumi-tor-setup: lets $user toggle Tor and the Lumi firewall from Lumi
 polkit.addRule(function (action, subject) {
     if (action.id == "org.freedesktop.systemd1.manage-units" && subject.user == "$user") {
         var unit = action.lookup("unit");
         var verb = action.lookup("verb");
-        if ((unit == "tor.service" || unit == "nftables.service") && (verb == "start" || verb == "stop" || verb == "restart"))
+        if ((unit == "tor.service" || unit == "lumi-firewall.service") && (verb == "start" || verb == "stop" || verb == "restart"))
             return polkit.Result.YES;
     }
 });

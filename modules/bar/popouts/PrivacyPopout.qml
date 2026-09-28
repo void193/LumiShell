@@ -189,9 +189,9 @@ ColumnLayout {
         SettingRow {
             icon: "local_fire_department"
             title: qsTr("Firewall")
-            detail: Privacy.firewallActive ? "blocking inbound" : "off"
+            detail: !Privacy.firewallInstalled ? "sudo lumi-tor-setup" : Privacy.firewallActive ? "blocking inbound" : "off"
             isOn: Privacy.firewallActive
-            enabled: !Privacy.busy
+            enabled: Privacy.firewallInstalled && !Privacy.busy
             onToggled: Privacy.toggleFirewall()
         }
 

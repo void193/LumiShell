@@ -40,6 +40,8 @@ Singleton {
     // Local defences
     property bool firewallActive: false
     property string firewallName: ""
+    property bool firewallInstalled: false // lumi-firewall.service exists
+    readonly property string firewallUnit: "lumi-firewall.service"
     property bool macRandom: false
     property string wifiConnection: ""
     property bool networkingEnabled: true
@@ -77,6 +79,7 @@ Singleton {
     }
 
     property bool busy: false
+    property bool firewallRestored: false
     property bool clearBusyOnRefresh: false
 
     function refresh(): void {
@@ -133,8 +136,12 @@ Singleton {
             exitProc.running = true;
     }
 
+    // lumi-firewall.service (from lumi-tor-setup) keeps state and can be stopped;
+    // Arch's own nftables.service only loads rules and reports inactive
     function toggleFirewall(): void {
-        run(["systemctl", firewallActive ? "stop" : "start", firewallName || "nftables.service"]);
+        const enable = !firewallActive;
+        store.firewall = enable;
+        run(["systemctl", enable ? "start" : "stop", firewallUnit]);
     }
 
     // Changing the cloned MAC only applies after reconnecting, so bounce the connection
@@ -176,8 +183,9 @@ Singleton {
             command -v tor >/dev/null && echo tor_installed=1 || echo tor_installed=0
             echo "tor=$(systemctl is-active tor.service 2>/dev/null)"
             fw=""
-            for s in nftables firewalld ufw; do [ "$(systemctl is-active $s.service 2>/dev/null)" = active ] && fw=$s.service && break; done
+            for s in lumi-firewall firewalld ufw; do [ "$(systemctl is-active $s.service 2>/dev/null)" = active ] && fw=$s.service && break; done
             echo "firewall=$fw"
+            [ -f /etc/systemd/system/lumi-firewall.service ] && echo fwunit=1 || echo fwunit=0
             wifi=$(nmcli -t -f NAME,TYPE connection show --active 2>/dev/null | awk -F: '$2=="802-11-wireless"{print $1; exit}')
             echo "wifi=$wifi"
             [ -n "$wifi" ] && echo "mac=$(nmcli -g 802-11-wireless.cloned-mac-address connection show "$wifi" 2>/dev/null)"
@@ -226,6 +234,14 @@ Singleton {
                 root.torControl = kv.torctl === "1";
                 root.firewallName = kv.firewall ?? "";
                 root.firewallActive = root.firewallName.length > 0;
+                root.firewallInstalled = kv.fwunit === "1";
+
+                // Bring the firewall back after a reboot if it was left on
+                if (!root.firewallRestored && root.firewallInstalled) {
+                    root.firewallRestored = true;
+                    if (store.firewall && !root.firewallActive)
+                        root.run(["systemctl", "start", root.firewallUnit]);
+                }
                 root.wifiConnection = kv.wifi ?? "";
                 root.macRandom = kv.mac === "random";
                 root.networkingEnabled = kv.networking !== "disabled";
@@ -388,6 +404,7 @@ Singleton {
             id: store
 
             property int rotateMinutes: 0
+            property bool firewall: false
         }
     }
 
@@ -425,6 +442,7 @@ Singleton {
                 exitCountry: root.torExitCountry,
                 rotateMinutes: root.rotateMinutes,
                 firewall: root.firewallName,
+                firewallInstalled: root.firewallInstalled,
                 macRandom: root.macRandom,
                 mic: root.micApps,
                 cam: root.camInUse,
