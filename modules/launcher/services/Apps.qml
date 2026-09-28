@@ -1,8 +1,8 @@
 pragma Singleton
 
 import Quickshell
-import Caelestia.Config
-import Caelestia.Models
+import LumiShell.Config
+import LumiShell.Models
 import qs.utils
 
 Searcher {

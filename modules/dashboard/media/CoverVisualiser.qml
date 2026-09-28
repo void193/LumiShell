@@ -4,8 +4,8 @@ import QtQuick
 import QtQuick.Shapes
 import Quickshell
 import M3Shapes
-import Caelestia.Config
-import Caelestia.Services
+import LumiShell.Config
+import LumiShell.Services
 import qs.components
 import qs.components.widgets
 import qs.services

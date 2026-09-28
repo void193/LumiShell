@@ -1,5 +1,5 @@
 import QtQuick
-import Caelestia.Config
+import LumiShell.Config
 
 AnchorAnimation {
     enum Type {

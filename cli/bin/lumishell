@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+# Utility script for running lumishell
+
+cd "$(dirname $0)/../src" || exit
+
+python -m lumishell "$@"

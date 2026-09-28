@@ -1,8 +1,8 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import Caelestia
-import Caelestia.Config
+import LumiShell
+import LumiShell.Config
 import qs.components
 import qs.services
 

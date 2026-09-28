@@ -1,8 +1,8 @@
 import QtQuick
 import Quickshell
-import Caelestia.Config
-import Caelestia.Images
-import Caelestia.Models
+import LumiShell.Config
+import LumiShell.Images
+import LumiShell.Models
 import qs.components
 import qs.components.effects
 import qs.components.images

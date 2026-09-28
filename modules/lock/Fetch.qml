@@ -3,8 +3,8 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Services.UPower
-import Caelestia
-import Caelestia.Config
+import LumiShell
+import LumiShell.Config
 import qs.components
 import qs.components.effects
 import qs.services
@@ -63,7 +63,7 @@ StyledRect {
                 Layout.preferredHeight: 0
                 active: !iconLoader.active
 
-                sourceComponent: SysInfo.isDefaultLogo ? caelestiaLogo : distroIcon
+                sourceComponent: SysInfo.isDefaultLogo ? lumishellLogo : distroIcon
             }
         }
 
@@ -78,7 +78,7 @@ StyledRect {
                 Layout.fillHeight: true
                 active: root.width > Tokens.sizes.lock.largeLogoWidth
 
-                sourceComponent: SysInfo.isDefaultLogo ? caelestiaLogo : distroIcon
+                sourceComponent: SysInfo.isDefaultLogo ? lumishellLogo : distroIcon
             }
 
             ColumnLayout {
@@ -150,7 +150,7 @@ StyledRect {
     }
 
     Component {
-        id: caelestiaLogo
+        id: lumishellLogo
 
         Logo {
             width: height

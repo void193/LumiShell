@@ -1,0 +1,100 @@
+# Maintainer: Rubin Bastakoti
+#
+# Builds LumiShell (shell, plugin and CLI) straight from this repository.
+# Usage: cd packaging/arch && makepkg -si
+
+pkgname=lumishell
+pkgver=2.4.0
+pkgrel=1
+pkgdesc='LumiShell: a minimal Quickshell desktop shell for Hyprland, with its CLI'
+arch=('x86_64')
+url='https://github.com/void193/LumiShell'
+license=('GPL-3.0-only')
+depends=(
+    'quickshell-git'
+    'glibc'
+    'gcc-libs'
+
+    # Brightness
+    'ddcutil'
+    'brightnessctl'
+
+    # Services
+    'libcava'
+    'networkmanager'
+    'lm_sensors'
+    'aubio'
+    'libpipewire'
+    'libqalculate'
+    'power-profiles-daemon'
+
+    # Fonts
+    'ttf-material-symbols-variable'
+    'ttf-rubik-vf'
+    'ttf-cascadia-code-nerd'
+
+    # Qt modules
+    'qt6-base'
+    'qt6-declarative'
+    'qt6-imageformats'
+    'qt6-m3shapes-git'
+
+    # CLI
+    'python'
+    'python-pillow'
+    'python-materialyoucolor'
+    'libnotify'
+    'grim'
+    'slurp'
+    'wl-clipboard'
+    'dart-sass'
+    'dconf'
+    'cliphist'
+    'fuzzel'
+    'ffmpeg'
+
+    # Extra functionality
+    'swappy'
+    'fish'
+    'bash'
+)
+optdepends=(
+    'asdbctl: controlling the brightness of Apple Studio Displays'
+    'fprintd: fingerprint unlock for the lock screen'
+    'howdy-next: face unlock for the lock screen'
+)
+makedepends=('cmake' 'ninja' 'qt6-shadertools' 'git'
+             'python-build' 'python-installer' 'python-hatch' 'python-hatch-vcs')
+provides=('lumishell')
+
+_repo="$(realpath "$startdir/../..")"
+
+pkgver() {
+    git -C "$_repo" describe --tags --long --abbrev=7 | sed 's/^v//;s/-/.r/;s/-/./'
+}
+
+build() {
+    cmake -S "$_repo" -B "$_repo/build" -G Ninja \
+        -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+        -DCMAKE_INSTALL_PREFIX=/ \
+        -DVERSION="${pkgver%%.r*}" \
+        -DGIT_REVISION="$(git -C "$_repo" rev-parse HEAD)" \
+        -DDISTRIBUTOR="LumiShell PKGBUILD"
+    cmake --build "$_repo/build"
+
+    rm -rf "$srcdir/cli"
+    cp -r "$_repo/cli" "$srcdir/cli"
+    cd "$srcdir/cli"
+    SETUPTOOLS_SCM_PRETEND_VERSION="${pkgver%%.r*}" python -m build --wheel --no-isolation
+}
+
+package() {
+    DESTDIR="$pkgdir" cmake --install "$_repo/build"
+
+    cd "$srcdir/cli"
+    python -m installer --destdir="$pkgdir" dist/*.whl
+    install -Dm644 completions/lumishell.fish "$pkgdir"/usr/share/fish/vendor_completions.d/lumishell.fish
+
+    install -Dm755 "$_repo/scripts/lumishell-live-thumbs" "$pkgdir"/usr/bin/lumishell-live-thumbs
+    install -Dm644 "$_repo/LICENSE" "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+}

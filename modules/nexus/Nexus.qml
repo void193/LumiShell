@@ -1,8 +1,8 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import Caelestia.Blobs
-import Caelestia.Config
+import LumiShell.Blobs
+import LumiShell.Config
 import qs.components
 import qs.components.controls
 import qs.services

@@ -2,7 +2,7 @@ import "media"
 import QtQuick
 import QtQuick.Layouts
 import M3Shapes
-import Caelestia.Config
+import LumiShell.Config
 import qs.components
 import qs.services
 

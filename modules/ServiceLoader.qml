@@ -1,6 +1,6 @@
 import QtQuick
 import Quickshell
-import Caelestia.Config
+import LumiShell.Config
 import qs.services
 
 Scope {

@@ -1,6 +1,6 @@
 import "dash"
 import QtQuick.Layouts
-import Caelestia.Config
+import LumiShell.Config
 import qs.components
 import qs.components.filedialog
 import qs.services

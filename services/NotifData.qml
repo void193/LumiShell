@@ -3,8 +3,8 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell
 import Quickshell.Services.Notifications
-import Caelestia
-import Caelestia.Config
+import LumiShell
+import LumiShell.Config
 import qs.services
 import qs.utils
 

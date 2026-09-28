@@ -6,7 +6,7 @@ import "components/workspaces"
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import Caelestia.Config
+import LumiShell.Config
 import qs.components
 import qs.services
 

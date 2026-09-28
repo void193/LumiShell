@@ -1,9 +1,9 @@
 import QtQuick
 import Quickshell
 import Quickshell.Services.UPower
-import Caelestia
-import Caelestia.Config
-import Caelestia.Services
+import LumiShell
+import LumiShell.Config
+import LumiShell.Services
 
 Scope {
     id: root

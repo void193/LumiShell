@@ -2,8 +2,8 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
-import Caelestia.Config
-import Caelestia.Models
+import LumiShell.Config
+import LumiShell.Models
 import qs.services
 import qs.modules.nexus.common
 
@@ -47,7 +47,7 @@ PageBase {
                         let parts = path.split("/");
                         let homeDir = "/" + parts[1] + "/" + parts[2];
                         let fileName = parts[parts.length - 1];
-                        return homeDir + "/.cache/caelestia/live_thumbs/" + fileName + ".jpg";
+                        return homeDir + "/.cache/lumishell/live_thumbs/" + fileName + ".jpg";
                     }
                     return path;
                 }

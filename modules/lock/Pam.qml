@@ -5,8 +5,8 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Services.Pam
-import Caelestia.Config
-import Caelestia.Services
+import LumiShell.Config
+import LumiShell.Services
 
 Scope {
     id: root

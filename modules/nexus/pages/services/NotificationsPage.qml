@@ -1,6 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
-import Caelestia.Config
+import LumiShell.Config
 import qs.components.controls
 import qs.modules.nexus.common
 

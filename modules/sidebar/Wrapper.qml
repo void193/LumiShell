@@ -1,8 +1,8 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import Caelestia
-import Caelestia.Config
+import LumiShell
+import LumiShell.Config
 import qs.components
 
 Item {

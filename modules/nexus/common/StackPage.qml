@@ -1,6 +1,6 @@
 import QtQuick
 import QtQuick.Controls
-import Caelestia.Config
+import LumiShell.Config
 import qs.components
 import qs.modules.nexus
 
@@ -100,7 +100,7 @@ StackView {
     LoggingCategory {
         id: logCat
 
-        name: "caelestia.nexus"
+        name: "lumishell.nexus"
         defaultLogLevel: LoggingCategory.Info
     }
 

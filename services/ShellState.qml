@@ -2,7 +2,7 @@ pragma Singleton
 
 import QtQuick
 import Quickshell
-import Caelestia
+import LumiShell
 import qs.components
 import qs.services
 

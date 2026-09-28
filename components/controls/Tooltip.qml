@@ -1,6 +1,6 @@
 import QtQuick
 import QtQuick.Controls
-import Caelestia.Config
+import LumiShell.Config
 import qs.components
 import qs.components.effects
 import qs.services

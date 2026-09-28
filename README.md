@@ -1,23 +1,47 @@
 <h1 align=center>LumiShell</h1>
 
-A personal fork of [Caelestia shell](https://github.com/caelestia-dots/shell) for Quickshell + Hyprland,
-tuned toward a minimal, clean, smooth look.
+A minimal, clean desktop shell for [Hyprland](https://hypr.land), built on [Quickshell](https://quickshell.outfoxxed.me).
+Ships with the `lumishell` CLI for colour schemes, wallpapers, screenshots and more.
+
+## Install (Arch Linux)
+
+```sh
+git clone https://github.com/void193/LumiShell.git
+cd LumiShell/packaging/arch
+makepkg -si
+```
+
+Then start it with `lumishell shell -d` (for example from your Hyprland config).
+
+## Hacking on it
+
+Symlink the repo as your Quickshell config so edits reload live:
+
+```sh
+ln -s ~/path/to/LumiShell ~/.config/quickshell/lumishell
+```
+
+The compiled plugin (`plugin/`) still has to be installed through the package above.
+
+## Layout
+
+| Path         | What it is                                  |
+| ------------ | ------------------------------------------- |
+| `shell.qml`, `modules/`, `components/`, `services/`, `utils/` | the shell (QML) |
+| `plugin/`    | C++ QML plugin (`LumiShell.*` modules)      |
+| `cli/`       | the `lumishell` command-line tool (Python)  |
+| `packaging/` | Arch PKGBUILD                               |
 
 ## Credits
 
-LumiShell is built on the work of others. All credit for the original shell goes to them:
+LumiShell is a fork. It stands on the work of:
 
--   **[Caelestia shell](https://github.com/caelestia-dots/shell)** by soramane and the caelestia-dots contributors.
-    LumiShell is forked from Caelestia v2.4.0 and keeps its full git history.
--   **[Caelestia Live Wallpapers Integration](https://github.com/SunnydeuS/Caelestia-Live-Wallpapers-Integration)**
-    by SunnydeuS, the source of the video/live wallpaper support.
-
-If you like this shell, go star and support the original projects.
-
-The original Caelestia README is kept in [`README.caelestia.md`](README.caelestia.md).
+-   [Caelestia shell](https://github.com/caelestia-dots/shell) and [Caelestia CLI](https://github.com/caelestia-dots/cli)
+    by soramane and the caelestia-dots contributors. Their full git history is kept in this repo.
+-   [Caelestia Live Wallpapers Integration](https://github.com/SunnydeuS/Caelestia-Live-Wallpapers-Integration)
+    by SunnydeuS, for video wallpaper support.
 
 ## License
 
-LumiShell is licensed under the [GNU GPL v3.0](LICENSE), the same license as Caelestia.
-Copyright notices of the original authors are retained; changes made in LumiShell are
-Copyright (C) 2026 Rubin Bastakoti.
+GNU GPL v3.0, see [LICENSE](LICENSE). Original copyright notices are retained;
+changes made in LumiShell are Copyright (C) 2026 Rubin Bastakoti.

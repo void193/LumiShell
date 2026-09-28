@@ -1,8 +1,8 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Io
-import Caelestia
-import Caelestia.Config
+import LumiShell
+import LumiShell.Config
 import qs.components
 import qs.services
 import qs.utils
@@ -34,14 +34,14 @@ PageBase {
             }
         }
 
-        // Parsed from the caelestia CLI's package listing; the sh wrapper avoids a
+        // Parsed from the lumishell CLI's package listing; the sh wrapper avoids a
         // warning when the (optional) CLI isn't installed
         Process {
             running: true
-            command: ["sh", "-c", "caelestia --version 2>/dev/null"]
+            command: ["sh", "-c", "lumishell --version 2>/dev/null"]
             stdout: StdioCollector {
                 onStreamFinished: {
-                    const m = text.match(/caelestia-cli\S*\s+(\d+(?:\.\d+)*)/);
+                    const m = text.match(/lumishell\S*\s+(\d+(?:\.\d+)*)/);
                     root.cliVersion = m ? m[1] : "";
                 }
             }
@@ -76,7 +76,7 @@ PageBase {
 
                 StyledText {
                     Layout.alignment: Qt.AlignHCenter
-                    text: CUtils.version ? `based on Caelestia v${CUtils.version}` : "…"
+                    text: CUtils.version ? `v${CUtils.version}` : "…"
                     color: Colours.palette.m3onSurfaceVariant
                     font: Tokens.font.body.medium
                 }

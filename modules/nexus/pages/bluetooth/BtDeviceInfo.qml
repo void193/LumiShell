@@ -3,8 +3,8 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Bluetooth
-import Caelestia.Components
-import Caelestia.Config
+import LumiShell.Components
+import LumiShell.Config
 import qs.components
 import qs.components.controls
 import qs.services

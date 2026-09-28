@@ -1,7 +1,7 @@
 import QtQuick
 import Quickshell
-import Caelestia.Config
-import Caelestia.Models
+import LumiShell.Config
+import LumiShell.Models
 import qs.components
 import qs.components.effects
 import qs.components.images
@@ -109,7 +109,7 @@ Item {
                     let parts = pathStr.split("/");
                     let homeDir = "/" + parts[1] + "/" + parts[2];
                     let fileName = parts[parts.length - 1];
-                    return homeDir + "/.cache/caelestia/live_thumbs/" + fileName + ".jpg";
+                    return homeDir + "/.cache/lumishell/live_thumbs/" + fileName + ".jpg";
                 }
                 return pathStr || "";
             }

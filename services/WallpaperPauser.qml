@@ -135,7 +135,7 @@ Singleton {
         // We still need to sync this to a text file because the python CLI needs to read it
         // BEFORE the Qt application starts in order to inject the environment variables.
         if (root._loaded) {
-            saveHwDecoderProcess.command = ["sh", "-c", "echo '" + root.hwDecoder + "' > ~/.cache/caelestia/hwDecoder.txt && nohup sh -c 'sleep 0.5 && caelestia shell -d' >/dev/null 2>&1 & caelestia shell -k"];
+            saveHwDecoderProcess.command = ["sh", "-c", "echo '" + root.hwDecoder + "' > ~/.cache/lumishell/hwDecoder.txt && nohup sh -c 'sleep 0.5 && lumishell shell -d' >/dev/null 2>&1 & lumishell shell -k"];
             saveHwDecoderProcess.running = true;
         }
     }

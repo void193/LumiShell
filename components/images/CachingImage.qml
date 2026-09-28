@@ -1,6 +1,6 @@
 import QtQuick
 import Quickshell
-import Caelestia.Images
+import LumiShell.Images
 
 Image {
     id: root
