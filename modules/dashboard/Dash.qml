@@ -12,13 +12,13 @@ GridLayout {
     rowSpacing: Tokens.spacing.medium
     columnSpacing: Tokens.spacing.medium
 
-    // Row 0: anonymous system card
+    // Row 0: banner across everything but the media card
     Rect {
         Layout.row: 0
         Layout.column: 0
-        Layout.columnSpan: 3
+        Layout.columnSpan: 4
         Layout.fillWidth: true
-        Layout.preferredHeight: sys.implicitHeight + Tokens.padding.large * 2
+        Layout.preferredHeight: sys.implicitHeight + Tokens.padding.extraLarge * 2
 
         radius: Tokens.rounding.extraLarge
 
@@ -27,7 +27,7 @@ GridLayout {
         }
     }
 
-    // Row 1: clock, exposure readout, resources
+    // Row 1: clock, calendar, exposure readout, resources
     Rect {
         Layout.row: 1
         Layout.column: 0
@@ -44,8 +44,22 @@ GridLayout {
     Rect {
         Layout.row: 1
         Layout.column: 1
+        Layout.preferredWidth: 300
+        Layout.preferredHeight: calendar.implicitHeight
+
+        radius: Tokens.rounding.extraLarge
+
+        Calendar {
+            id: calendar
+
+            screenState: root.screenState
+        }
+    }
+
+    Rect {
+        Layout.row: 1
+        Layout.column: 2
         Layout.preferredWidth: privacy.implicitWidth + Tokens.padding.large * 2
-        Layout.preferredHeight: privacy.implicitHeight + Tokens.padding.large * 2
         Layout.fillWidth: true
         Layout.fillHeight: true
 
@@ -58,7 +72,7 @@ GridLayout {
 
     Rect {
         Layout.row: 1
-        Layout.column: 2
+        Layout.column: 3
         Layout.preferredWidth: resources.implicitWidth
         Layout.fillHeight: true
 
@@ -72,7 +86,7 @@ GridLayout {
     // Media spans both rows on the right
     Rect {
         Layout.row: 0
-        Layout.column: 3
+        Layout.column: 4
         Layout.rowSpan: 2
         Layout.preferredWidth: media.implicitWidth
         Layout.minimumHeight: media.implicitHeight

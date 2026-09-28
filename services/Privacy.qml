@@ -223,6 +223,12 @@ Singleton {
                     // UDP sockets in the ephemeral range are clients (browsers, calls), not services
                     else if (proto === "udp" && parseInt(port) >= 32768)
                         continue;
+                    // mDNS is local discovery, not something to connect to
+                    else if (proto === "udp" && port === "5353")
+                        continue;
+                    // The Lumi firewall drops unsolicited inbound traffic except ssh
+                    else if (kv.firewall === root.firewallUnit && !(proto === "tcp" && port === "22"))
+                        continue;
                     else if (!exposed.some(e => e.proto === proto && e.port === port))
                         exposed.push({ proto: proto, port: port, proc: proc || "?" });
                 }
