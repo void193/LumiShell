@@ -32,8 +32,7 @@ PageBase {
             horizontalPadding: Tokens.padding.largeIncreased
             checked: root.btEnabled
             onToggled: {
-                if (root.adapter)
-                    root.adapter.enabled = checked;
+                BluetoothPower.setEnabled(root.adapter, checked);
             }
         }
 

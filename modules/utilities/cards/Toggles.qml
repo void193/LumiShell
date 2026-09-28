@@ -92,9 +92,7 @@ StyledRect {
                         icon: "bluetooth"
                         checked: Bluetooth.defaultAdapter?.enabled ?? false // qmllint disable unresolved-type
                         onClicked: {
-                            const adapter = Bluetooth.defaultAdapter; // qmllint disable unresolved-type
-                            if (adapter)
-                                adapter.enabled = !adapter.enabled;
+                            BluetoothPower.toggle(Bluetooth.defaultAdapter); // qmllint disable unresolved-type
                         }
                     }
                 }

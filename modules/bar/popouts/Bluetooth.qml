@@ -29,9 +29,7 @@ ColumnLayout {
         label: qsTr("Enabled")
         checked: Bluetooth.defaultAdapter?.enabled ?? false // qmllint disable unresolved-type
         toggle.onToggled: {
-            const adapter = Bluetooth.defaultAdapter; // qmllint disable unresolved-type
-            if (adapter)
-                adapter.enabled = checked;
+            BluetoothPower.setEnabled(Bluetooth.defaultAdapter, checked); // qmllint disable unresolved-type
         }
     }
 
