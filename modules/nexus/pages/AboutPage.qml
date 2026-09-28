@@ -11,8 +11,6 @@ import qs.modules.nexus.common
 PageBase {
     id: root
 
-    // Plugin support is not wired up yet; always 0 for now
-    readonly property int pluginCount: 0
 
     property string quickshellVersion
     property string cliVersion
@@ -140,18 +138,6 @@ PageBase {
             last: true
             label: qsTr("Qt")
             value: CUtils.qtVersion || "…"
-        }
-
-        // Plugins
-        SectionHeader {
-            text: qsTr("Plugins")
-        }
-
-        InfoRow {
-            first: true
-            last: true
-            label: qsTr("Loaded plugins")
-            value: root.pluginCount.toString()
         }
     }
 }
