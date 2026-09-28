@@ -40,8 +40,8 @@ ColumnLayout {
                     return "offline";
                 if (Privacy.vpnActive)
                     return `via ${Privacy.vpnName}`;
-                if (Privacy.torActive)
-                    return "via tor";
+                if (Privacy.torRouting)
+                    return `via tor${Privacy.torExitCountry ? ` · ${Privacy.torExitCountry}` : ""}`;
                 return "exposed";
             }
             color: Privacy.tunneled ? Colours.palette.m3primary : Colours.palette.m3onSurfaceVariant
@@ -51,11 +51,91 @@ ColumnLayout {
 
     // Tunnels and defences
     Toggle {
-        label: qsTr("Tor")
-        detail: Privacy.torInstalled ? "tor.service" : qsTr("not installed")
-        isOn: Privacy.torActive
+        label: qsTr("Tor mode")
+        detail: {
+            if (!Privacy.torInstalled)
+                return qsTr("run: sudo lumi-tor-setup");
+            if (Privacy.torRouting)
+                return Privacy.torExitIp ? `exit ${Privacy.torExitIp}${Privacy.torExitCountry ? ` · ${Privacy.torExitCountry}` : ""}` : qsTr("building circuit...");
+            return qsTr("routes firefox & proxy-aware apps");
+        }
+        isOn: Privacy.torRouting
         toggle.disabled: !Privacy.torInstalled || Privacy.busy
         toggle.onToggled: Privacy.toggleTor()
+    }
+
+    // Identity rotation, only while routing through Tor
+    ColumnLayout {
+        Layout.fillWidth: true
+        Layout.rightMargin: Tokens.padding.extraSmall
+        Layout.preferredHeight: Privacy.torRouting ? implicitHeight : 0
+        visible: Privacy.torRouting
+        spacing: Tokens.spacing.small
+
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: Tokens.spacing.small
+
+            StyledText {
+                Layout.fillWidth: true
+                text: {
+                    if (Privacy.rotateMinutes <= 0 || Privacy.nextRotateAt <= 0)
+                        return "rotate  off";
+                    const left = Math.max(0, Math.round((Privacy.nextRotateAt - countdown.now) / 1000));
+                    return `rotate  ${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}`;
+                }
+                color: Colours.palette.m3onSurfaceVariant
+                font: Tokens.font.mono.small
+            }
+
+            Repeater {
+                model: [0, 5, 15, 30]
+
+                TextButton {
+                    required property int modelData
+
+                    type: TextButton.Tonal
+                    isToggle: true
+                    checked: Privacy.rotateMinutes === modelData
+                    text: modelData === 0 ? qsTr("off") : `${modelData}m`
+                    font: Tokens.font.mono.small
+                    horizontalPadding: Tokens.padding.small
+                    disabled: !Privacy.torControl && modelData > 0
+                    onClicked: Privacy.setRotateMinutes(modelData)
+                }
+            }
+        }
+
+        TextButton {
+            Layout.fillWidth: true
+
+            type: TextButton.Tonal
+            text: Privacy.rotating || Privacy.checkingExit ? qsTr("Rotating...") : qsTr("New identity")
+            disabled: !Privacy.torControl || Privacy.rotating
+            onClicked: Privacy.newIdentity()
+        }
+
+        StyledText {
+            Layout.fillWidth: true
+            visible: !Privacy.torControl
+            wrapMode: Text.WordWrap
+            text: qsTr("Rotation needs the control port: sudo lumi-tor-setup")
+            color: Colours.palette.m3outline
+            font: Tokens.font.mono.small
+        }
+    }
+
+    // Drives the rotation countdown while the popout is open
+    Timer {
+        id: countdown
+
+        property double now: Date.now()
+
+        running: root.visible && Privacy.nextRotateAt > 0
+        interval: 1000
+        repeat: true
+        triggeredOnStart: true
+        onTriggered: now = Date.now()
     }
 
     Toggle {

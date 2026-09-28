@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+# One-time setup so Lumi can drive Tor for a user:
+#   - install tor
+#   - open a password-protected control port (used to request new identities)
+#   - let that user start/stop tor and the nftables firewall without a password prompt
+# Usage: sudo lumi-tor-setup [user]
+set -euo pipefail
+
+if [ "$(id -u)" != 0 ]; then
+    echo "Run this with sudo." >&2
+    exit 1
+fi
+
+user="${1:-${SUDO_USER:-}}"
+if [ -z "$user" ] || ! id "$user" >/dev/null 2>&1; then
+    echo "Usage: sudo lumi-tor-setup <user>" >&2
+    exit 1
+fi
+home="$(getent passwd "$user" | cut -d: -f6)"
+
+echo ":: Installing tor"
+pacman -S --needed --noconfirm tor
+
+echo ":: Creating the control port password"
+keydir="$home/.config/lumi"
+key="$keydir/tor-control.key"
+[ -d "$keydir" ] || install -d -o "$user" -g "$(id -gn "$user")" -m 755 "$keydir"
+if [ ! -s "$key" ]; then
+    head -c 32 /dev/urandom | base64 | tr -d '/+=\n' > "$key"
+fi
+chown "$user:$(id -gn "$user")" "$key"
+chmod 600 "$key"
+hash="$(tor --hash-password "$(cat "$key")" | tail -n1)"
+
+echo ":: Enabling the control port in /etc/tor/torrc"
+torrc=/etc/tor/torrc
+sed -i '/^# >>> lumi$/,/^# <<< lumi$/d' "$torrc"
+cat >> "$torrc" <<EOF
+# >>> lumi
+ControlPort 127.0.0.1:9051
+HashedControlPassword $hash
+# <<< lumi
+EOF
+
+echo ":: Allowing $user to start/stop tor and the firewall"
+cat > /etc/polkit-1/rules.d/49-lumi-privacy.rules <<EOF
+// Written by lumi-tor-setup: lets $user toggle Tor and the nftables firewall from Lumi
+polkit.addRule(function (action, subject) {
+    if (action.id == "org.freedesktop.systemd1.manage-units" && subject.user == "$user") {
+        var unit = action.lookup("unit");
+        var verb = action.lookup("verb");
+        if ((unit == "tor.service" || unit == "nftables.service") && (verb == "start" || verb == "stop" || verb == "restart"))
+            return polkit.Result.YES;
+    }
+});
+EOF
+
+systemctl try-restart tor.service
+echo ":: Done. Toggle Tor from Lumi's privacy panel (hover the shield in the bar)."

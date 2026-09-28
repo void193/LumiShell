@@ -64,6 +64,8 @@ optdepends=(
     'asdbctl: controlling the brightness of Apple Studio Displays'
     'fprintd: fingerprint unlock for the lock screen'
     'howdy-next: face unlock for the lock screen'
+    'tor: Tor mode and identity rotation (set up with lumi-tor-setup)'
+    'nftables: firewall toggle'
 )
 makedepends=('cmake' 'ninja' 'qt6-shadertools' 'git'
              'python-build' 'python-installer' 'python-hatch' 'python-hatch-vcs')
@@ -101,5 +103,6 @@ package() {
     install -Dm644 completions/lumi.fish "$pkgdir"/usr/share/fish/vendor_completions.d/lumi.fish
 
     install -Dm755 "$_repo/scripts/lumi-live-thumbs" "$pkgdir"/usr/bin/lumi-live-thumbs
+    install -Dm755 "$_repo/scripts/lumi-tor-setup" "$pkgdir"/usr/bin/lumi-tor-setup
     install -Dm644 "$_repo/LICENSE" "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
 }

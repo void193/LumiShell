@@ -4,11 +4,15 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import Quickshell.Services.Pipewire
+import Lumi
 import Lumi.Config
+import qs.utils
 
 // Read-mostly view of how exposed this machine is: tunnels (VPN/Tor), firewall,
 // MAC randomisation, and whether anything is using the mic or camera.
-// Everything is local except checkIp(), which only runs when asked.
+// Everything is local except IP checks, which only run when asked or right after a
+// Tor identity change. Tor mode routes system-proxy apps (e.g. Firefox) through Tor
+// and can rotate the exit IP on a timer.
 Singleton {
     id: root
 
@@ -17,7 +21,21 @@ Singleton {
     property string vpnName: ""
     property bool torInstalled: false
     property bool torActive: false
-    readonly property bool tunneled: vpnActive || torActive
+    property bool torProxy: false // system proxy points at Tor's SOCKS port
+    property bool torControl: false // lumi-tor-setup has run (control port password exists)
+    readonly property bool torRouting: torActive && torProxy
+    readonly property bool tunneled: vpnActive || torRouting
+
+    // Tor exit, checked through Tor itself
+    property string torExitIp: ""
+    property string torExitCountry: ""
+    readonly property bool checkingExit: exitProc.running
+
+    // Identity rotation; the interval is saved in the state dir
+    readonly property int rotateMinutes: store.rotateMinutes
+    property double nextRotateAt: 0
+    readonly property bool rotating: identityProc.running
+    readonly property string torKeyPath: `${Paths.config}/tor-control.key`
 
     // Local defences
     property bool firewallActive: false
@@ -77,8 +95,34 @@ Singleton {
         ipCountry = "";
     }
 
+    // Tor mode = tor.service + the system SOCKS proxy; both go on and off together
     function toggleTor(): void {
-        run(["systemctl", torActive ? "stop" : "start", "tor.service"]);
+        if (torRouting || torActive) {
+            torExitIp = "";
+            torExitCountry = "";
+            run(["sh", "-c", "gsettings set org.gnome.system.proxy mode none; systemctl stop tor.service"]);
+        } else {
+            run(["sh", "-c", "systemctl start tor.service && gsettings set org.gnome.system.proxy.socks host 127.0.0.1 && gsettings set org.gnome.system.proxy.socks port 9050 && gsettings set org.gnome.system.proxy mode manual"]);
+            exitRetry.attempts = 0;
+            exitRetry.restart();
+        }
+    }
+
+    function setRotateMinutes(minutes: int): void {
+        store.rotateMinutes = minutes;
+        nextRotateAt = minutes > 0 ? Date.now() + minutes * 60000 : 0;
+    }
+
+    // Ask Tor for fresh circuits: new connections get a new exit IP
+    function newIdentity(): void {
+        if (!torActive || !torControl || identityProc.running)
+            return;
+        identityProc.running = true;
+    }
+
+    function checkExit(): void {
+        if (torActive && !exitProc.running)
+            exitProc.running = true;
     }
 
     function toggleFirewall(): void {
@@ -133,6 +177,8 @@ Singleton {
             fuser -s /dev/video* 2>/dev/null && echo cam=1 || echo cam=0
             ss -Htulnp 2>/dev/null | awk '{ p=""; if (match($7, /"[^"]+"/)) p=substr($7, RSTART+1, RLENGTH-2); print "sock=" $1 "|" $5 "|" p }'
             echo "conn=$(ss -Htun state established 2>/dev/null | wc -l)"
+            echo "proxy=$(gsettings get org.gnome.system.proxy mode 2>/dev/null)|$(gsettings get org.gnome.system.proxy.socks port 2>/dev/null)"
+            [ -s "${root.torKeyPath}" ] && echo torctl=1 || echo torctl=0
         `]
         stdout: StdioCollector {
             onStreamFinished: {
@@ -168,6 +214,8 @@ Singleton {
                 root.vpnActive = root.vpnName.length > 0;
                 root.torInstalled = kv.tor_installed === "1";
                 root.torActive = kv.tor === "active";
+                root.torProxy = kv.proxy === "'manual'|9050";
+                root.torControl = kv.torctl === "1";
                 root.firewallName = kv.firewall ?? "";
                 root.firewallActive = root.firewallName.length > 0;
                 root.wifiConnection = kv.wifi ?? "";
@@ -239,6 +287,108 @@ Singleton {
         onTriggered: root.ignoreClipboardEvents = false
     }
 
+    // Tor takes a few seconds to bootstrap after starting, so retry the first exit check
+    Timer {
+        id: exitRetry
+
+        property int attempts: 0
+
+        interval: 5000
+        onTriggered: {
+            if (root.torExitIp || attempts >= 6)
+                return;
+            attempts++;
+            root.checkExit();
+            restart();
+        }
+    }
+
+    Timer {
+        running: root.torRouting && root.rotateMinutes > 0
+        interval: root.rotateMinutes * 60000
+        repeat: true
+        onRunningChanged: root.nextRotateAt = running ? Date.now() + interval : 0
+        onTriggered: {
+            root.nextRotateAt = Date.now() + interval;
+            root.newIdentity();
+        }
+    }
+
+    Process {
+        id: identityProc
+
+        // Plain control-port protocol; the password never touches argv
+        command: ["python3", "-c", `
+import socket, sys
+key = open(sys.argv[1]).read().strip()
+s = socket.create_connection(("127.0.0.1", 9051), timeout=5)
+s.sendall(f'AUTHENTICATE "{key}"\\r\\nSIGNAL NEWNYM\\r\\nQUIT\\r\\n'.encode())
+print(s.recv(1024).decode().replace("\\r\\n", " ").strip())
+`, root.torKeyPath]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                if (text.split("250").length > 2) {
+                    // Circuits need a moment to rebuild before the new exit shows up
+                    root.torExitIp = "";
+                    root.torExitCountry = "";
+                    identityCheck.restart();
+                } else {
+                    Toaster.toast(qsTr("New identity failed"), qsTr("Tor control port refused the request"), "shield", Toast.Warning);
+                }
+            }
+        }
+    }
+
+    Timer {
+        id: identityCheck
+
+        interval: 2500
+        onTriggered: {
+            exitProc.announce = true;
+            root.checkExit();
+        }
+    }
+
+    Process {
+        id: exitProc
+
+        property bool announce
+
+        command: ["curl", "-s", "--max-time", "20", "--socks5-hostname", "127.0.0.1:9050", "https://ifconfig.co/json"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                try {
+                    const info = JSON.parse(text);
+                    root.torExitIp = info.ip ?? "";
+                    root.torExitCountry = info.country ?? "";
+                } catch (e) {
+                    root.torExitIp = "";
+                    root.torExitCountry = "";
+                }
+                if (exitProc.announce && root.torExitIp)
+                    Toaster.toast(qsTr("New identity"), root.torExitCountry ? `${root.torExitIp} · ${root.torExitCountry}` : root.torExitIp, "shield_lock");
+                exitProc.announce = false;
+            }
+        }
+    }
+
+    FileView {
+        path: `${Paths.state}/privacy.json`
+        watchChanges: true
+        onFileChanged: reload()
+        onAdapterUpdated: writeAdapter()
+        onLoadFailed: err => {
+            if (err === FileViewError.FileNotFound)
+                writeAdapter();
+        }
+
+        JsonAdapter {
+            id: store
+
+            property int rotateMinutes: 0
+        }
+    }
+
     Timer {
         interval: 4000
         running: true
@@ -258,11 +408,20 @@ Singleton {
             root.restoreNetwork();
         }
 
+        function newIdentity(): void {
+            root.newIdentity();
+        }
+
         function status(): string {
             return JSON.stringify({
                 tunneled: root.tunneled,
                 vpn: root.vpnName,
                 tor: root.torActive,
+                torProxy: root.torProxy,
+                torControl: root.torControl,
+                exit: root.torExitIp,
+                exitCountry: root.torExitCountry,
+                rotateMinutes: root.rotateMinutes,
                 firewall: root.firewallName,
                 macRandom: root.macRandom,
                 mic: root.micApps,

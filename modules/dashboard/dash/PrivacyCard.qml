@@ -54,8 +54,8 @@ Item {
                         return "offline";
                     if (Privacy.vpnActive)
                         return `tunneled · ${Privacy.vpnName}`;
-                    if (Privacy.torActive)
-                        return "tunneled · tor";
+                    if (Privacy.torRouting)
+                        return `tor · ${Privacy.torExitCountry || Privacy.torExitIp || "connecting"}`;
                     return "exposed";
                 }
                 color: Privacy.tunneled ? Colours.palette.m3primary : Colours.palette.m3onSurface
